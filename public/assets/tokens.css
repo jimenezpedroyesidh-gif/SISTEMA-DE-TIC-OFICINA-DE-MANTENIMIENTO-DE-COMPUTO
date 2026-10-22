@@ -1,0 +1,195 @@
+/* =========================================================
+   TOKENS DE DISEÑO — única fuente de verdad de colores,
+   espaciados, radios, sombras y tipografía.
+   (estilo.css lo importa; ningún otro CSS debe tener hex.)
+
+   ┌─────────────────────────────────────────────────────────┐
+   │ ¿Quieres cambiar el aspecto de la aplicación?            │
+   │ Edita SOLO el bloque «PANEL DE PERSONALIZACIÓN» de abajo.│
+   │ El resto del archivo deriva de esas variables.           │
+   └─────────────────────────────────────────────────────────┘
+   ========================================================= */
+
+:root{
+  /* =======================================================
+     PANEL DE PERSONALIZACIÓN
+     Cada variable alimenta a las de más abajo (y estas a
+     todos los CSS de css/). Cambiar un valor aquí recolorea
+     o reajusta TODA la aplicación. Los valores actuales
+     reproducen exactamente el diseño institucional UFPS.
+     ======================================================= */
+
+  /* Colores de marca */
+  --color-principal:   #BC0017;  /* rojo institucional: botones, enlaces, foco, elemento activo. Sus tonos claros/oscuros se calculan solos */
+  --color-secundario:  #374151;  /* gris oscuro: botones neutros, texto de apoyo e iconos */
+  --color-texto-sobre-principal: #fff; /* texto e iconos encima del color principal y de fondos oscuros (botones, cabecera, avisos) */
+
+  /* Superficies */
+  --color-fondo:       #f4f5f7;  /* fondo general de la página */
+  --color-superficie:  #fff;     /* tarjetas, paneles, tablas, campos de formulario, menús */
+  --color-borde:       #e2e5ea;  /* bordes y divisores suaves */
+
+  /* Texto */
+  --color-texto:       #111827;  /* títulos y texto principal */
+  --color-texto-suave: #6b7280;  /* ayudas, fechas, texto atenuado */
+
+  /* Colores de estado (chips, alertas, semáforos) */
+  --color-exito:       #15803d;
+  --color-advertencia: #d97706;
+  --color-informacion: #2563eb;
+  --color-peligro:     #dc2626;
+
+  /* Forma */
+  --radio-borde:         8px;    /* botones, campos, tarjetas */
+  --radio-borde-pequeno: 6px;    /* chips, notas, elementos compactos */
+  --radio-borde-grande:  10px;   /* paneles y ventanas */
+
+  /* Tipografía */
+  --fuente-principal:  "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --tamano-texto-base: .9375rem; /* 15px: tamaño del texto normal */
+
+  /* ===================== FIN DEL PANEL =====================
+     Lo de abajo son los tokens internos que usan los CSS.
+     Normalmente no hace falta tocarlos.
+     ========================================================= */
+
+  /* ===== Color institucional =====
+     brand-500 sale de --color-principal (panel de arriba). Todo el resto sale de él con color-mix(); por eso
+     basta cambiar --color-principal. */
+  --brand-500:          var(--color-principal);
+  --color-primary:      var(--brand-500);
+  --color-primary-dark: color-mix(in srgb, var(--brand-500) 76%, black);
+  --color-primary-darker: color-mix(in srgb, var(--brand-500) 58%, black);
+  --color-primary-hover: color-mix(in srgb, var(--brand-500) 81%, black); /* hover de botón institucional (landing) */
+  --color-primary-soft: color-mix(in srgb, var(--brand-500) 7%, white);
+  --color-primary-soft-2: color-mix(in srgb, var(--brand-500) 15%, white);
+  --color-secondary:    var(--gray-700);   /* botones/acciones secundarias */
+  --color-white:        var(--color-superficie);            /* fondos blancos (tarjetas, campos) */
+  --color-on-primary:   var(--color-texto-sobre-principal); /* texto sobre el color de marca */
+
+  /* ===== Pegatinas del tablero de actividades (secretaría): tonos suaves de papel ===== */
+  --peg-amarillo: #fff3b0;
+  --peg-azul:     #dcebff;
+  --peg-verde:    #d9f2e1;
+  --peg-rosa:     #ffdfe8;
+  --peg-lila:     #e9e1ff;
+  --peg-borde:    rgba(17, 24, 39, .10);
+
+  /* ===== Neutros (rediseño corporativo: grises fríos, sobrios) ===== */
+  --gray-50:  #f7f8fa;
+  --gray-100: #f0f2f5;
+  --gray-200: var(--color-borde);
+  --gray-300: #cdd2da;
+  --gray-500: var(--color-texto-suave);
+  --gray-600: #4b5563;
+  --gray-700: var(--color-secundario);
+  --ink:      var(--color-texto);
+  --color-muted: var(--gray-500);
+  --color-panel: var(--gray-100);
+  --color-border-soft: var(--gray-300);
+  --color-bg:  var(--color-fondo);   /* fondo general de la app */
+
+  /* ===== Estados (base) — tonos sobrios ===== */
+  --color-warning: var(--color-advertencia);
+  --color-info:    var(--color-informacion);
+  --color-success: var(--color-exito);
+  --color-danger:  var(--color-peligro);
+
+  /* Estados (variantes oscuras / de texto) */
+  --color-warning-dark: #92400e;
+  --color-info-dark:    #1d4ed8;
+  --color-danger-dark:  #b91c1c;
+  --color-danger-text:  #b91c1c;
+  --color-success-text: #166534;
+  --color-purple:       #7c3aed;
+  --color-text:         var(--gray-700);
+  --color-text-muted:   var(--gray-500);
+  --color-border-dashed: var(--gray-300);
+  --color-ok-border:    #86c79a;   /* callout de éxito */
+  --color-ok-bg:        #f0faf3;
+  --color-link-action:  #1d4ed8;   /* botones-enlace de tablas */
+  --color-row-line:     var(--gray-200);
+  --color-danger-inline: #b91c1c;
+
+  /* Estados (fondos suaves: chips, bloques de horario, alertas) */
+  --color-warning-soft: #fef6e7;
+  --color-info-soft:    #eef4ff;
+  --color-success-soft: #ecf8f0;
+  --color-danger-soft:  #fdeeee;
+  --color-success-bg:   #ecf8f0;
+  --color-purple-soft:  #f3effe;
+  --color-danger-soft-border: #f5c2c2;
+  --color-danger-soft-bg:     #fdf3f3;
+  /* Bordes de los chips de estado (más suaves que el color base) */
+  --color-warning-border: #f5d29a;
+  /* Pantalla del televisor (pantalla.php): fondo oscuro a propósito, se lee a distancia */
+  --tv-bg: #0b1220; --tv-panel: #111a2e; --tv-borde: #22304d; --tv-texto: #e5e9f2; --tv-tenue: #9aa6bf;
+  --tv-azul: #3b82f6; --tv-verde: #22c55e; --tv-amarillo: #facc15; --tv-rojo: #ef4444; --tv-naranja: #fb923c;
+  --tv-item: #0e1628; --tv-item-alerta: #1c1020;
+  --tv-espera-bg: #3a2f0b; --tv-proceso-bg: #0c2a4d; --tv-proceso-txt: #93c5fd;
+  --tv-validar-bg: #0d3320; --tv-validar-txt: #86efac; --tv-rechazado-bg: #3b1111; --tv-rechazado-txt: #fca5a5;
+  /* Equipo INCOMPLETO en la checklist: amarillo fuerte, distinguible de «Pendiente» (blanco) */
+  --color-incompleto-bg: #fde047;
+  --color-incompleto-border: #ca8a04;
+  --color-incompleto-text: #713f12;
+  --color-info-border:    #c3d5fb;
+  --color-success-border: #b5e0c2;
+  --color-danger-border:  #f5c2c2;
+
+  /* ===== Espaciado ===== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+
+  /* ===== Bordes (radios contenidos: estética seria) ===== */
+  --radius-sm: var(--radio-borde-pequeno);
+  --radius-md: var(--radio-borde);
+  --radius-lg: var(--radio-borde-grande);
+  --radius-pill: 999px;
+
+  /* ===== Medidas del shell ===== */
+  --header-h: 60px;
+  --sidebar-w: 256px;
+
+  /* ===== Sombras / anillos de foco / superposiciones ===== */
+  --shadow-sm: 0 1px 2px rgba(17,24,39,.05);
+  --shadow-md: 0 2px 8px rgba(17,24,39,.06);
+  --shadow-lg: 0 10px 30px rgba(17,24,39,.10);
+  --focus-ring:        0 0 0 3px color-mix(in srgb, var(--brand-500) 18%, transparent);
+  --focus-ring-soft:   0 0 0 3px color-mix(in srgb, var(--brand-500) 8%, transparent);
+  --shadow-pop:        0 12px 32px rgba(17,24,39,.12), 0 2px 6px rgba(17,24,39,.06);   /* menús / popovers */
+  --shadow-pop-lg:     0 16px 40px rgba(17,24,39,.16), 0 2px 6px rgba(17,24,39,.06);   /* modales / menú de usuario */
+  --shadow-header:     0 1px 0 rgba(17,24,39,.06);
+  --shadow-sidebar:    8px 0 32px rgba(17,24,39,.18);
+  --shadow-accordion:  0 1px 3px rgba(17,24,39,.05);
+  --shadow-inset-hover: 0 0 0 2px rgba(17,24,39,.08) inset;
+  --shadow-card:       0 1px 2px rgba(17,24,39,.05);     /* landing */
+  --overlay:           rgba(17,24,39,.55);
+  --overlay-sidebar:   rgba(17,24,39,.45);
+
+  /* Blanco translúcido sobre el color de marca */
+  --on-brand-12: rgba(255,255,255,.12);
+  --on-brand-14: rgba(255,255,255,.14);
+  --on-brand-18: rgba(255,255,255,.18);
+  --on-brand-20: rgba(255,255,255,.20);
+  --on-brand-25: rgba(255,255,255,.25);
+  --on-brand-28: rgba(255,255,255,.28);
+  --on-brand-30: rgba(255,255,255,.30);
+  --on-brand-35: rgba(255,255,255,.35);
+  --on-brand-75: rgba(255,255,255,.75);
+
+  /* ===== Tipografía ===== */
+  --font-base: var(--fuente-principal);
+  --fs-xs: .75rem;
+  --fs-sm: .8125rem;
+  --fs-base: var(--tamano-texto-base);
+
+  /* ===== Transiciones / táctil ===== */
+  --ease: cubic-bezier(.4,0,.2,1);
+  --tap-size: 44px;
+}

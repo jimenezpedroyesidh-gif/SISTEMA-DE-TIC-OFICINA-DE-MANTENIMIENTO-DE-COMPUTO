@@ -1,0 +1,118 @@
+/* UTILIDADES — y componentes pequeños (reemplazan estilos en línea)
+   Parte de estilo.css. El orden de importación en estilo.css es el orden original: no reordenar. */
+/* =========================================================
+   Utilidades y componentes pequeños (reemplazan estilos en línea)
+   Todos los valores salen de tokens.css.
+   ========================================================= */
+
+/* Textos y márgenes */
+.text-center{ text-align: center; }
+.text-muted{ color: var(--gray-500); }
+.mt-2{ margin-top: var(--space-2); }
+.mt-3{ margin-top: var(--space-3); }
+.mt-4{ margin-top: var(--space-4); }
+.mb-2{ margin-bottom: var(--space-2); }
+.mb-3{ margin-bottom: var(--space-3); }
+
+.texto-peligro{ color: var(--color-danger-inline); }
+.hint-peligro{ color: var(--color-danger-text); }
+
+/* Callouts / notas */
+.callout-success{
+  border: 1px solid var(--color-ok-border);
+  border-left: 3px solid var(--color-success);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-ok-bg);
+}
+.nota-info{
+  padding: .6rem .8rem;
+  border-radius: var(--radius-sm);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-left: 3px solid var(--gray-500);
+}
+.nota-panel{
+  margin: var(--space-1) 0;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-panel);
+  border-radius: 4px;
+}
+.card-dashed{
+  border: 1px dashed var(--color-border-dashed);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+/* Listas de casillas con scroll */
+.checklist-scroll{
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border-soft);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+}
+
+/* Contenedor con desplazamiento horizontal para tablas muy anchas */
+.tabla-scroll{ overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Botón con aspecto de enlace (acciones dentro de tablas) y form en línea */
+.btn-link{
+  background: none; border: none; padding: 0;
+  color: var(--color-link-action); cursor: pointer;
+  font-family: inherit; font-size: inherit; text-decoration: underline; text-underline-offset: 2px;
+}
+.form-inline{ display: inline; }
+
+/* ---------------------------------------------------------
+   Utilidades: reemplazan los style="" en línea. Llevan !important porque el atributo style ganaba a cualquier
+   regla y se conserva ese comportamiento. Regla: no agregar style="" con márgenes, tamaños, colores o
+   tipografía; usar estas clases (lo vigila una prueba).
+   --------------------------------------------------------- */
+.mt-1{ margin-top: var(--space-1) !important; }
+.mt-6px{ margin-top: 6px !important; }
+.m-0-auto{ margin: 0 auto !important; }
+.m-0{ margin: 0 !important; }
+.m-2px{ margin: 2px !important; }
+.my-2{ margin-top: var(--space-2) !important; margin-bottom: var(--space-2) !important; }
+.py-1{ padding-top: var(--space-1) !important; padding-bottom: var(--space-1) !important; }
+.pl-18{ padding-left: 18px !important; }
+.fs-85{ font-size: 0.85em !important; }
+.fs-90{ font-size: 0.9em !important; }
+.fs-14r{ font-size: 1.4rem !important; }
+.fs-14em{ font-size: 1.4em !important; }
+.fw-normal{ font-weight: normal !important; }
+.fw-bold{ font-weight: bold !important; }
+.ls-2{ letter-spacing: 2px !important; }
+.d-block{ display: block !important; }
+.d-inline{ display: inline !important; }
+.d-inline-block{ display: inline-block !important; }
+.d-flex{ display: flex !important; }
+.flex-row{ flex-direction: row !important; }
+.flex-wrap{ flex-wrap: wrap !important; }
+.items-center{ align-items: center !important; }
+.gap-2{ gap: var(--space-2) !important; }
+.w-auto{ width: auto !important; }
+.mw-260{ max-width: 260px !important; }
+.mw-420{ max-width: 420px !important; }
+.mw-520{ max-width: 520px !important; }
+.mw-560{ max-width: 560px !important; }
+.mw-640{ max-width: 640px !important; }
+.mw-1100{ max-width: 1100px !important; }
+.shadow-none{ box-shadow: none !important; }
+
+.app-avatar-lg{ width: 64px; height: 64px; font-size: 1.4rem; background: var(--color-primary-soft); color: var(--color-primary); }
+.evidencia-miniatura{ max-width: 120px; max-height: 90px; border-radius: 6px; object-fit: cover; }
+
+/* Formulario de filtros en una sola línea (se apila en el celular) — usado en Cierre de semestre */
+.filtros-inline{ display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; margin-bottom: 12px; }
+.filtros-inline .field{ margin: 0; min-width: 180px; flex: 1 1 180px; }
+
+/* Lista corta dentro de una celda o tarjeta (actividades de un mantenimiento, historial de cambios). */
+.lista-compacta{
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-4);
+  font-size: .85rem;
+}
+.lista-compacta li{ margin: 2px 0; }

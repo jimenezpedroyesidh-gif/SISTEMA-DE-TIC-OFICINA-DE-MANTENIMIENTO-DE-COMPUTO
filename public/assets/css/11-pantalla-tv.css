@@ -1,0 +1,73 @@
+/* =========================================================
+   Grupo: módulos — Pantalla de la oficina de mantenimiento (televisor, public/pantalla.php)
+   Fondo oscuro a propósito: se ve a distancia y no encandila en la oficina. Todo escalado con vw/clamp
+   para que se lea igual en un TV de 32" o de 55". Solo afecta a body.tv.
+   ========================================================= */
+body.tv{
+  margin: 0; min-height: 100vh; min-height: 100dvh; background: var(--tv-bg); color: var(--tv-texto);
+  font-size: clamp(14px, 1.15vw, 26px); line-height: 1.35;
+  display: flex; flex-direction: column;
+}
+.tv-head{
+  display: flex; align-items: center; justify-content: space-between; gap: 1em;
+  padding: .7em 1.2em; border-bottom: 1px solid var(--tv-borde); background: var(--tv-panel);
+}
+.tv-marca{ display: flex; flex-direction: column; }
+.tv-marca strong{ font-size: 1.35em; }
+.tv-marca span{ color: var(--tv-tenue); font-size: .85em; }
+.tv-reloj{ display: flex; flex-direction: column; align-items: center; }
+.tv-hora{ font-size: 2.2em; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.tv-fecha{ color: var(--tv-tenue); font-size: .85em; }
+.tv-acciones{ display: flex; gap: .5em; }
+.tv-btn{
+  font: inherit; font-size: .75em; color: var(--tv-texto); background: var(--tv-azul); border: 0;
+  border-radius: 999px; padding: .45em 1em; cursor: pointer; text-decoration: none;
+}
+.tv-btn-ghost{ background: transparent; border: 1px solid var(--tv-borde); }
+:fullscreen .tv-acciones{ display: none; }
+
+#tv-columnas{
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1em; padding: 1em 1.2em .4em;
+  align-items: start;
+}
+#tv-columnas.tv-sin-conexion{ opacity: .6; }
+.tv-col{ background: var(--tv-panel); border: 1px solid var(--tv-borde); border-radius: 14px; padding: .8em 1em; min-width: 0; }
+.tv-col-titulo{
+  color: var(--tv-texto);
+  margin: 0 0 .6em; font-size: 1.35em; display: flex; justify-content: space-between; align-items: baseline; gap: .6em;
+  border-bottom: 2px solid var(--tv-borde); padding-bottom: .35em;
+}
+.tv-contador{ font-size: .7em; color: var(--tv-tenue); font-weight: 600; }
+.tv-lista{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .55em; }
+.tv-item{ border: 1px solid var(--tv-borde); border-left: 6px solid var(--tv-azul); border-radius: 10px; padding: .55em .8em; background: var(--tv-item); }
+.tv-item-activo{ border-left-color: var(--tv-verde); }
+.tv-item-vencido{ border-left-color: var(--tv-naranja); }
+.tv-item-alerta{ border-left-color: var(--tv-rojo); background: var(--tv-item-alerta); }
+.tv-item-fila{ display: flex; justify-content: space-between; align-items: center; gap: .6em; }
+.tv-sala{ font-size: 1.25em; font-weight: 800; letter-spacing: .02em; }
+.tv-item-titulo{ font-weight: 600; margin: .15em 0; overflow-wrap: anywhere; }
+.tv-item-meta{ display: flex; flex-wrap: wrap; gap: .2em 1.2em; color: var(--tv-tenue); font-size: .85em; }
+.tv-item-meta strong{ color: var(--tv-texto); }
+.tv-chip{ font-size: .75em; font-weight: 700; border-radius: 999px; padding: .15em .7em; background: var(--tv-borde); white-space: nowrap; }
+.tv-est-espera{ background: var(--tv-espera-bg); color: var(--tv-amarillo); }
+.tv-est-proceso{ background: var(--tv-proceso-bg); color: var(--tv-proceso-txt); }
+.tv-est-validar{ background: var(--tv-validar-bg); color: var(--tv-validar-txt); }
+.tv-est-rechazado{ background: var(--tv-rechazado-bg); color: var(--tv-rechazado-txt); }
+.tv-alerta{ color: var(--tv-rechazado-txt); }
+.tv-incompleto{ color: var(--tv-amarillo); }
+.tv-avance{ display: flex; align-items: center; gap: .6em; margin-top: .35em; }
+.tv-avance-barra{ -webkit-appearance: none; appearance: none; flex: 1; height: .55em; border: 0; background: var(--tv-borde); border-radius: 999px; overflow: hidden; }
+.tv-avance-barra::-webkit-progress-bar{ background: var(--tv-borde); border-radius: 999px; }
+.tv-avance-barra::-webkit-progress-value{ background: var(--tv-verde); border-radius: 999px; }
+.tv-avance-barra::-moz-progress-bar{ background: var(--tv-verde); border-radius: 999px; }
+.tv-avance-txt{ font-size: .85em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tv-vacio{ color: var(--tv-tenue); font-style: italic; }
+.tv-pie{ grid-column: 1 / -1; margin: 0; text-align: right; color: var(--tv-tenue); font-size: .75em; }
+
+/* Celular o tablet (vista previa): una columna */
+@media (max-width: 767px){
+  body.tv{ font-size: 15px; }
+  #tv-columnas{ grid-template-columns: 1fr; padding: .8em; }
+  .tv-head{ flex-wrap: wrap; padding: .7em .8em; }
+  .tv-reloj{ align-items: flex-start; }
+}

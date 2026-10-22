@@ -1,0 +1,459 @@
+/* MÓDULOS — plano de sala (tipo «selección de sillas de cine»)
+   Parte de estilo.css. Comportamiento en assets/plano_sala.js.
+   - Escritorio/tablet (≥ 768px): ambos lados de la sala con el pasillo al medio.
+   - Celular: un lado a la vez, con botones para pasar de un lado al otro. */
+
+/* ---------- Plano ---------- */
+.sala-plano{
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sala-leyenda{
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4);
+  font-size: var(--fs-xs); color: var(--gray-600);
+}
+.sala-leyenda li{ display: inline-flex; align-items: center; gap: 6px; }
+.sala-swatch{ width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid var(--gray-300); background: var(--color-white); display: inline-block; }
+.sala-nota{ margin: 0; font-size: var(--fs-sm); }
+
+/* Frente del salón: tablero + equipo docente, videobeam, parlantes */
+.sala-frente{ display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+.sala-tablero{
+  width: 100%; max-width: 520px;
+  text-align: center;
+  font-size: .6875rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--color-on-primary); background: var(--gray-700);
+  border-radius: var(--radius-sm);
+  padding: 6px var(--space-3);
+}
+.sala-frente-puestos{ display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); }
+.sala-frente-puestos .sala-puesto{ min-width: 92px; }
+
+/* Selector de lado (solo celular) */
+.sala-lados-nav{
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+  background: var(--gray-200); padding: 4px; border-radius: var(--radius-md);
+}
+.sala-lado-btn{
+  border: none; background: transparent; cursor: pointer;
+  font-family: inherit; font-size: var(--fs-sm); font-weight: 600; color: var(--gray-600);
+  min-height: 40px; border-radius: var(--radius-sm);
+  transition: background .15s var(--ease), color .15s var(--ease);
+}
+.sala-lado-btn.active{ background: var(--color-white); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+.sala-lados{ display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+.sala-lado{ display: grid; gap: var(--space-2); align-content: start; }
+.sala-cols-2{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sala-cols-3{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.sala-pasillo{ display: none; }
+.sala-plano[data-lado-activo="izq"] .sala-lado-der{ display: none; }
+.sala-plano[data-lado-activo="der"] .sala-lado-izq{ display: none; }
+.sala-pasar{ align-self: center; }
+
+@media (min-width: 768px){
+  .sala-lados-nav, .sala-pasar{ display: none; }
+  .sala-lados{ grid-template-columns: 1fr auto 1fr; align-items: stretch; }
+  .sala-plano[data-lado-activo] .sala-lado-izq,
+  .sala-plano[data-lado-activo] .sala-lado-der{ display: grid; }
+  .sala-pasillo{
+    display: flex; align-items: center; justify-content: center;
+    width: 30px;
+    border-left: 1px dashed var(--gray-300);
+    border-right: 1px dashed var(--gray-300);
+    color: var(--gray-500); font-size: .625rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase;
+  }
+  .sala-pasillo span{ writing-mode: vertical-rl; transform: rotate(180deg); }
+}
+
+/* ---------- Puesto (equipo) ---------- */
+.sala-puesto{
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 66px;
+  padding: var(--space-2) 4px 6px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--gray-600);
+  font-family: inherit;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .12s var(--ease), box-shadow .12s var(--ease), background .12s var(--ease), border-color .12s var(--ease);
+}
+.sala-puesto:hover{ border-color: var(--gray-500); box-shadow: var(--shadow-md); }
+.sala-puesto:active{ transform: scale(.97); }
+/* Foco de .sala-puesto: comparte la regla de .switch:focus-visible (06-componentes-globales.css). */
+.sala-puesto-ico{ width: 28px; height: 28px; }
+.sala-puesto-cod{ font-size: var(--fs-xs); font-weight: 650; color: var(--ink); line-height: 1.1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sala-puesto-quien{
+  position: absolute; top: 4px; left: 4px;
+  font-size: .5625rem; font-weight: 700; letter-spacing: .02em;
+  background: var(--color-white); color: var(--gray-700);
+  border: 1px solid var(--gray-300); border-radius: var(--radius-pill);
+  padding: 0 4px; line-height: 14px;
+}
+/* Casilla del selector: invisible, el puesto completo es la zona táctil */
+.sala-puesto-check{ position: absolute; opacity: 0; inline-size: 1px; block-size: 1px; pointer-events: none; }
+
+/* Cambio de pieza propuesto: punto de aviso */
+.sala-puesto.con-pieza::after{
+  content: ''; position: absolute; bottom: 5px; right: 5px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--color-warning); box-shadow: 0 0 0 2px var(--color-white);
+}
+
+/* Estados (puesto y muestra de la leyenda) */
+.est-pendiente{ background: var(--color-white); border-color: var(--gray-300); }
+.est-tomado{ background: var(--color-info-soft); border-color: var(--color-info-border); color: var(--color-info-dark); }
+.est-mio{ background: var(--color-primary-soft); border-color: var(--color-primary); color: var(--color-primary); }
+.est-realizado{ background: var(--color-success-soft); border-color: var(--color-success-border); color: var(--color-success-text); }
+.est-incompleto{ background: var(--color-incompleto-bg); border-color: var(--color-incompleto-border); color: var(--color-incompleto-text); }
+/* Mayor especificidad: un equipo incompleto se ve amarillo aunque además esté «no operativo» (la X roja se mantiene). */
+.sala-puesto.est-incompleto, .sala-puesto.est-incompleto.no-operativo{ background: var(--color-incompleto-bg); border-color: var(--color-incompleto-border); border-width: 2px; color: var(--color-incompleto-text); }
+.sala-puesto.est-incompleto .sala-puesto-cod{ color: var(--color-incompleto-text); }
+.est-excluido{ border-style: dashed; opacity: .5; }
+.est-traslado{ background: var(--color-info-soft); border-color: var(--color-info-border); color: var(--color-info-dark); border-style: dashed; }
+.est-seleccionado{ background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+.sala-puesto.est-seleccionado .sala-puesto-cod{ color: var(--color-on-primary); }
+.sala-puesto.est-seleccionado:hover{ border-color: var(--color-primary-dark); }
+
+/* Puesto elegido (su detalle está abierto) */
+.sala-puesto[aria-pressed="true"]{
+  border-color: var(--ink);
+  box-shadow: 0 0 0 2px var(--ink);
+  transform: translateY(-1px);
+}
+
+.sala-seleccion-resumen{ margin: 0; font-size: var(--fs-sm); color: var(--gray-500); }
+.sala-seleccion-resumen.con-seleccion{ color: var(--color-primary-dark); font-weight: 600; }
+
+/* ---------- Avance (barra) ---------- */
+.sala-progreso{
+  -webkit-appearance: none; appearance: none;
+  display: block; width: 100%; max-width: 240px; height: 6px;
+  border: none; border-radius: var(--radius-pill);
+  background: var(--gray-200); overflow: hidden;
+  margin-top: 6px;
+}
+.sala-progreso::-webkit-progress-bar{ background: var(--gray-200); border-radius: var(--radius-pill); }
+.sala-progreso::-webkit-progress-value{ background: var(--color-success); border-radius: var(--radius-pill); }
+.sala-progreso::-moz-progress-bar{ background: var(--color-success); border-radius: var(--radius-pill); }
+.sala-abrir .ico{ width: 18px; height: 18px; }
+
+/* ---------- Ventana del plano (Mantenimientos) ---------- */
+body.modal-abierto{ overflow: hidden; }
+.sala-modal{
+  position: fixed; inset: 0; z-index: 80;
+  background: var(--overlay);
+  display: flex; align-items: stretch; justify-content: center;
+  animation: shell-aparecer .16s var(--ease);
+}
+.sala-modal[hidden]{ display: none; }
+.sala-modal-caja{
+  position: relative;
+  background: var(--color-white);
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.sala-modal-head{
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: 3px solid var(--color-primary);
+  border-bottom: 1px solid var(--gray-200);
+  flex-shrink: 0;
+}
+.sala-modal-titulos{ flex: 1; min-width: 0; }
+.sala-modal-titulo{ margin: 0; font-size: 1.05rem; }
+.sala-modal-sub{ margin: 2px 0 0; font-size: var(--fs-sm); color: var(--gray-500); }
+.sala-modal-titulos .sala-progreso{ max-width: none; }
+.sala-modal-cerrar, .sala-detalle-cerrar{
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200); background: var(--color-white); color: var(--gray-700); cursor: pointer;
+}
+.sala-modal-cerrar:hover, .sala-detalle-cerrar:hover{ background: var(--gray-50); color: var(--ink); }
+.sala-modal-cuerpo{ flex: 1; min-height: 0; overflow-y: auto; padding: var(--space-3); }
+
+/* Detalle del equipo: hoja inferior en el celular */
+.sala-detalle-panel{
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 85;
+  max-height: 78vh; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--color-white);
+  border-top: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-pop-lg);
+  padding: var(--space-4);
+  transform: translateY(105%);
+  transition: transform .22s var(--ease);
+}
+.sala-detalle-panel.con-detalle{ transform: translateY(0); }
+.sala-detalle-vacio{ display: none; }
+.sala-detalle-vacio-ico{ width: 40px; height: 40px; color: var(--gray-300); }
+
+.sala-detalle-head{ display: flex; align-items: flex-start; gap: var(--space-2); margin-bottom: var(--space-3); }
+.sala-detalle-head > div,
+.sala-fila-form select{ flex: 1; min-width: 0; }
+.sala-detalle-cod{ font-size: 1.1rem; }
+.sala-datos{
+  display: grid; grid-template-columns: auto 1fr; gap: 6px var(--space-3);
+  margin: 0 0 var(--space-3); font-size: var(--fs-sm);
+}
+.sala-datos dt{ color: var(--gray-500); font-weight: 600; font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .04em; padding-top: 2px; }
+.sala-datos dd{ margin: 0; color: var(--gray-700); overflow-wrap: anywhere; }
+.sala-acciones{ display: flex; flex-direction: column; gap: var(--space-3); }
+.sala-acciones form{ gap: var(--space-2); }
+.sala-acciones .hint{ margin: 0; }
+.sala-form-asignar, .sala-form-marcar{ border-top: 1px solid var(--gray-200); padding-top: var(--space-3); }
+.sala-fila-form{ display: flex; gap: var(--space-2); }
+.sala-fila-form .btn{ flex-shrink: 0; }
+
+@media (min-width: 1024px){
+  .sala-modal{ align-items: center; padding: var(--space-5); }
+  .sala-modal-caja{
+    width: min(1180px, 100%); height: auto; max-height: calc(100vh - 48px); max-height: calc(100dvh - 48px);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-pop-lg);
+  }
+  .sala-modal-cuerpo{
+    display: grid; grid-template-columns: minmax(0, 1fr) 360px;
+    padding: 0; overflow: hidden;
+  }
+  .sala-modal-cuerpo > .sala-plano{ margin: var(--space-4); overflow-y: auto; max-height: calc(100vh - 190px); max-height: calc(100dvh - 190px); }
+  .sala-detalle-panel{
+    position: static; z-index: auto; transform: none; transition: none; /* z-index auto: como ítem de grid no debe tapar los menús */
+    max-height: calc(100vh - 150px); max-height: calc(100dvh - 150px);
+    border-top: none; border-left: 1px solid var(--gray-200);
+    border-radius: 0; box-shadow: none;
+    background: var(--gray-50);
+  }
+  .sala-detalle-panel:not(.con-detalle) .sala-detalle-vacio{
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2);
+    height: 100%; min-height: 240px; text-align: center; color: var(--gray-500); font-size: var(--fs-sm);
+  }
+}
+
+/* ---------- Equipo no operativo: X encima del puesto ----------
+   (le falta la torre / el todo en uno, la pieza principal está defectuosa o en
+   revisión, o el inventario lo marca no operativo). El resto del puesto sigue
+   dibujado porque monitor, teclado y mouse se quedan en la sala. */
+.sala-puesto.no-operativo{
+  background: var(--gray-100);
+  border-color: var(--color-danger-border);
+  color: var(--gray-500);
+}
+.sala-puesto.no-operativo .sala-puesto-cod{ color: var(--gray-600); }
+.sala-puesto.no-operativo:has(.sala-puesto-check:disabled){ cursor: not-allowed; }
+.sala-puesto-x{ position: absolute; inset: 8px; pointer-events: none; }
+.sala-puesto-x::before, .sala-puesto-x::after{
+  content: ''; position: absolute; left: 50%; top: 50%;
+  width: 70%; height: 2px; border-radius: 2px;
+  background: var(--color-danger);
+  transform: translate(-50%, -50%) rotate(35deg);
+  box-shadow: 0 0 0 1px var(--color-white);
+}
+.sala-puesto-x::after{ transform: translate(-50%, -50%) rotate(-35deg); }
+.sala-swatch.no-operativo{
+  border-color: var(--color-danger);
+  background:
+    linear-gradient(45deg, transparent 43%, var(--color-danger) 43% 57%, transparent 57%),
+    linear-gradient(-45deg, var(--gray-100) 43%, var(--color-danger) 43% 57%, var(--gray-100) 57%);
+}
+
+/* ---------- Estado real del equipo (detalle) ---------- */
+.sala-estado{
+  border: 1px solid var(--color-success-border);
+  border-left: 3px solid var(--color-success);
+  background: var(--color-success-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-sm);
+}
+.sala-estado-no{ border-color: var(--color-danger-border); border-left-color: var(--color-danger); background: var(--color-danger-soft-bg); }
+.sala-estado-linea{ margin: 0; color: var(--gray-700); }
+.sala-estado-sub{ margin: var(--space-2) 0 var(--space-1); font-size: var(--fs-xs); font-weight: 650; text-transform: uppercase; letter-spacing: .05em; color: var(--gray-500); }
+.sala-piezas{ list-style: none; margin: var(--space-2) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.sala-piezas li{
+  font-size: var(--fs-xs); padding: 1px 8px; border-radius: var(--radius-pill);
+  background: var(--color-white); border: 1px solid var(--gray-200); color: var(--gray-700);
+}
+.sala-piezas li.pieza-alerta{ border-color: var(--color-warning-border); color: var(--color-warning-dark); background: var(--color-warning-soft); }
+.sala-piezas li.pieza-fuera{ border-style: dashed; border-color: var(--color-danger-border); color: var(--color-danger-text); text-decoration: line-through; text-decoration-thickness: 1px; }
+.sala-traslados{ margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: var(--space-2); }
+.sala-traslados li{ color: var(--gray-700); }
+
+/* Desplegable «Equipos no operativos» debajo del selector */
+.sala-fuera{ border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: var(--color-white); }
+.sala-fuera > summary{ cursor: pointer; padding: var(--space-2) var(--space-3); font-size: var(--fs-sm); font-weight: 600; color: var(--color-danger-text); }
+.sala-fuera-item{ padding: 0 var(--space-3) var(--space-2); }
+.sala-fuera-item > strong{ display: block; margin: var(--space-2) 0 4px; }
+
+/* ---------- Plano de consulta (ficha por salón): plano + panel de detalle ---------- */
+.sala-ficha-barra{ display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-3); }
+.sala-ficha{ display: block; }
+.sala-ficha .sala-detalle-panel .menu-acciones{ margin-top: var(--space-1); }
+/* Videobeam / parlantes de la sala (componentes frente al tablero, no equipos de cómputo) */
+.sala-puesto-infra{ border-style: dashed; }
+@media (min-width: 1024px){
+  .sala-ficha{
+    display: grid; grid-template-columns: minmax(0, 1fr) 340px;
+    border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  }
+  .sala-ficha > .sala-plano{ border: none; border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
+  .sala-ficha > .sala-detalle-panel{ max-height: none; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
+}
+
+/* Acciones secundarias del detalle (asignar, reasignar, liberar) plegadas en un desplegable */
+.sala-mas{ border-top: 1px solid var(--gray-200); padding-top: var(--space-2); }
+.sala-mas > summary{ cursor: pointer; font-size: var(--fs-sm); font-weight: 600; color: var(--gray-700); padding: 6px 0; list-style: none; }
+.sala-mas > summary::-webkit-details-marker{ display: none; }
+.sala-mas[open] > summary{ color: var(--ink); }
+.sala-mas > form{ margin-top: var(--space-2); }
+.sala-mas .sala-form-asignar{ border-top: none; padding-top: 0; }
+.qr-card .menu-acciones{ display: block; }
+.qr-card .menu-acciones-lista{ left: 0; right: 0; min-width: 0; }
+
+/* Menús y desplegables dentro de un acordeón: sin la flecha del acordeón y sin quedar recortados */
+details.menu-acciones > summary::after, details.sala-mas > summary::after, details.sala-fuera > summary::after{ content: none; }
+.hg-accordion:has(details.menu-acciones[open]){ overflow: visible; }
+/* Dentro del panel de detalle (hoja inferior en el celular) el menú se despliega en línea */
+.sala-detalle-panel .menu-acciones{ display: block; }
+.sala-detalle-panel .menu-acciones-lista{ position: static; box-shadow: none; margin-top: 4px; min-width: 0; max-width: none; animation: none; }
+
+/* ---------- Distribución real del salón (distribucion_sala.php) ----------
+   Filas de mesas del frente al fondo; cada mesa con sus puestos (pueden ser 2, 3, 4…);
+   el primer pasillo de cada fila parte el salón en lado izquierdo / derecho. */
+.sala-filas{ display: grid; grid-template-columns: max-content; justify-content: start; gap: var(--space-2); overflow-x: auto; padding-bottom: 2px; }
+.sala-fila-lado{ display: flex; gap: var(--space-2); align-items: stretch; }
+.sala-mesa{
+  display: flex; gap: 4px; padding: 4px;
+  background: var(--gray-200); border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+}
+.sala-mesa-pasillo{ margin-right: var(--space-5); }
+.sala-mesa .sala-puesto{ width: 60px; min-height: 60px; padding: 14px 2px 4px; }
+.sala-mesa .sala-puesto-ico{ width: 22px; height: 22px; }
+.sala-fila-pasillo{ display: none; }
+@media (min-width: 768px){
+  .sala-filas{ justify-content: center; }
+  .sala-filas-pasillo{ grid-template-columns: max-content 30px max-content; column-gap: 0; }
+  .sala-plano[data-lado-activo] .sala-filas .sala-fila-lado{ display: flex; }
+  .sala-filas-pasillo .sala-lado-izq{ justify-content: flex-end; padding-right: var(--space-2); }
+  .sala-filas-pasillo .sala-lado-der{ padding-left: var(--space-2); }
+  .sala-fila-pasillo{
+    display: flex; align-items: flex-start; justify-content: center;
+    margin: calc(var(--space-2) * -.5) 0;
+    border-left: 1px dashed var(--gray-300); border-right: 1px dashed var(--gray-300);
+    color: var(--gray-500); font-size: .625rem; font-weight: 650; letter-spacing: .12em; text-transform: uppercase;
+    position: relative;
+  }
+  .sala-fila-pasillo span{ position: absolute; top: var(--space-2); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; z-index: 1; }
+}
+/* Número del puesto (el que se pega en el equipo) */
+.sala-puesto-num{
+  position: absolute; top: 3px; right: 3px;
+  min-width: 18px; padding: 0 4px;
+  font-size: .625rem; font-weight: 750; line-height: 15px; text-align: center;
+  color: var(--gray-700); background: var(--color-white);
+  border: 1px solid var(--gray-300); border-radius: var(--radius-pill);
+}
+.sala-puesto.est-seleccionado .sala-puesto-num{ color: var(--color-primary); border-color: var(--color-white); }
+/* Puesto sin equipo: se dibuja para reconocer el salón */
+.sala-puesto-vacio{
+  cursor: default; border-style: dashed; background: transparent; color: var(--gray-500);
+  min-height: 60px;
+}
+.sala-puesto-vacio:hover{ box-shadow: none; border-color: var(--gray-300); }
+.sala-puesto-vacio:active{ transform: none; }
+.sala-puesto-vacio .sala-puesto-cod{ color: var(--gray-500); font-weight: 600; }
+.sala-frente-puestos .sala-puesto-vacio{ min-width: 92px; }
+/* Puesto docente al fondo del salón */
+.sala-fondo{ display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+.sala-fondo-rotulo{
+  width: 100%; max-width: 520px; text-align: center;
+  font-size: .6875rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--gray-600); background: var(--gray-200); border-radius: var(--radius-sm); padding: 4px var(--space-3);
+}
+/* Equipos de la sala que aún no tienen puesto en la distribución */
+.sala-sin-ubicar{ border-top: 1px dashed var(--gray-300); padding-top: var(--space-2); }
+.sala-sin-ubicar-tit{ margin: 0 0 var(--space-2); font-size: var(--fs-xs); font-weight: 650; color: var(--gray-600); text-align: center; }
+
+/* ---------- Editor de distribución (distribucion_sala.php) ---------- */
+.dist{ display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); align-items: start; }
+.dist-lienzo{ min-width: 0; }
+.dist-lienzo-barra{ display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-2); }
+.dist-resumen{ font-size: var(--fs-sm); color: var(--gray-600); font-weight: 600; }
+.dist-plano{ overflow-x: auto; align-items: stretch; }
+.dist-vacio{ text-align: center; margin: var(--space-3) 0; }
+.dist-fila{ display: flex; flex-direction: column; gap: 4px; padding-top: var(--space-2); border-top: 1px solid var(--gray-200); }
+.dist-fila-cab{ display: flex; align-items: center; gap: var(--space-2); }
+.dist-fila-n{ font-size: var(--fs-xs); color: var(--gray-600); text-transform: uppercase; letter-spacing: .05em; }
+.dist-fila-acc{ display: flex; gap: 2px; }
+.dist-mesas{ display: flex; gap: var(--space-2); align-items: flex-start; }
+.dist-mesa-bloque{ display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dist-con-pasillo{ margin-right: var(--space-5); padding-right: var(--space-5); border-right: 1px dashed var(--gray-300); }
+.dist-mesa-ctrl{ display: flex; align-items: center; gap: 2px; }
+.dist-mesa-n{ font-size: .6875rem; color: var(--gray-600); min-width: 28px; text-align: center; }
+.dist-mini{
+  min-width: 26px; height: 26px; padding: 0 6px;
+  border: 1px solid var(--gray-300); border-radius: var(--radius-sm);
+  background: var(--color-white); color: var(--gray-700);
+  font-family: inherit; font-size: .75rem; font-weight: 650; cursor: pointer;
+}
+.dist-mini:hover{ border-color: var(--gray-500); color: var(--ink); }
+.dist-mini.activo{ background: var(--gray-700); border-color: var(--gray-700); color: var(--color-on-primary); }
+.dist-mini-peligro:hover{ border-color: var(--color-danger); color: var(--color-danger); }
+.dist-puesto{ cursor: pointer; }
+.dist-puesto.sala-puesto-vacio{ cursor: pointer; }
+.dist-puesto.sala-puesto-vacio:hover{ border-color: var(--gray-500); }
+.dist-red{ font-size: .5625rem; color: var(--gray-600); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dist-docente{ width: 100%; }
+.dist-docente-izq{ justify-content: flex-start; }
+.dist-docente-der{ justify-content: flex-end; }
+.dist-panel{ display: flex; flex-direction: column; gap: var(--space-3); }
+.dist-bloque{
+  background: var(--color-white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  padding: var(--space-3);
+}
+.dist-bloque-puesto{ border-color: var(--ink); box-shadow: var(--shadow-md); }
+.dist-bloque-tit{ margin: 0 0 var(--space-2); font-size: var(--fs-sm); font-weight: 700; color: var(--ink); cursor: default; }
+details.dist-bloque > summary.dist-bloque-tit{ cursor: pointer; margin: 0; }
+details.dist-bloque[open] > summary.dist-bloque-tit{ margin-bottom: var(--space-2); }
+.dist-campos{ display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.dist-campos .field{ margin: 0; }
+.dist-acciones{ display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.dist-check{ display: flex; align-items: center; gap: 6px; font-size: var(--fs-sm); margin-top: var(--space-2); }
+.dist-sin{ display: flex; flex-wrap: wrap; gap: 6px; }
+.dist-chip{
+  border: 1px solid var(--gray-300); background: var(--gray-50); color: var(--ink);
+  border-radius: var(--radius-pill); padding: 3px 10px; font-family: inherit; font-size: var(--fs-xs); font-weight: 600; cursor: pointer;
+}
+.dist-chip:hover{ border-color: var(--color-primary); color: var(--color-primary); }
+.dist-guardar{
+  position: sticky; bottom: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3);
+  background: var(--color-white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  padding: var(--space-2) var(--space-3); box-shadow: var(--shadow-md);
+}
+.dist-guardar .btn{ width: auto; }
+.dist-estado{ font-size: var(--fs-sm); color: var(--gray-500); }
+.dist-estado.dist-sucio{ color: var(--color-warning-dark); font-weight: 650; }
+@media (min-width: 1024px){
+  .dist{ grid-template-columns: minmax(0, 1fr) 340px; }
+  .dist-panel{ position: sticky; top: calc(var(--header-h) + var(--space-3)); max-height: calc(100vh - var(--header-h) - 110px); max-height: calc(100dvh - var(--header-h) - 110px); overflow-y: auto; }
+  .dist-guardar{ grid-column: 1 / -1; }
+}
+@media (max-width: 767px){
+  .dist-plano .sala-mesa .sala-puesto{ width: 52px; }
+}
+/* Códigos largos (cuando el corto chocaría con otro equipo): en dos líneas en vez de cortarse */
+.sala-mesa .sala-puesto-cod{ white-space: normal; overflow-wrap: anywhere; text-align: center; font-size: .6875rem; }

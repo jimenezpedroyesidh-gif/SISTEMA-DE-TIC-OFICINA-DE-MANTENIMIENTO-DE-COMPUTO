@@ -1,0 +1,6 @@
+# Compresión de las respuestas: las páginas grandes (Fichas de equipo, Horarios) viajan comprimidas, lo que
+# en celular con datos móviles marca la diferencia. Solo actúa si Apache tiene mod_deflate activo
+# («LoadModule deflate_module modules/mod_deflate.so» en httpd.conf).
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/csv application/javascript application/json image/svg+xml
+</IfModule>

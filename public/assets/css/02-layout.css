@@ -1,0 +1,92 @@
+/* LAYOUT — páginas, contenedores
+   Parte de estilo.css. El orden de importación en estilo.css es el orden original: no reordenar. */
+/* =========================================================
+   Layout genérico
+   ========================================================= */
+
+/* Página centrada de una sola tarjeta: login, register, reportar */
+.page-center{
+  min-height: 100vh; min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4);
+  background: var(--color-bg);
+}
+
+.card{
+  background: var(--color-white);
+  border: 1px solid var(--gray-200);
+  border-top: 3px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-4);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-lg);
+}
+
+.card h2{
+  text-align: center;
+  font-size: 1.35rem;
+  margin: 0 0 var(--space-4);
+}
+
+/* Contenedor ancho de panel/dashboard */
+.shell{
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+.user-info{
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-sm);
+}
+.user-info p{ margin: var(--space-1) 0; }
+.user-info strong{ color: var(--ink); }
+
+/* Tarjeta/sección estándar de contenido */
+.panel-box{
+  background: var(--color-white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Título de sección: sobrio, con una marca corta de color institucional */
+.panel-title{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 650;
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--color-primary);
+  line-height: 1.3;
+}
+.panel-title .hint{ font-weight: 400; margin: 0; }
+
+/* Subtítulo dentro de una sección (ficha_equipo.php, tablas por grupo) */
+.panel-subtitle{
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--gray-600);
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+/* Desde 768px: más aire en el contenedor y las tarjetas. */
+@media (min-width: 768px){
+  .shell{ padding: var(--space-5); }
+  .card{ padding: var(--space-6) var(--space-5); }
+}

@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  calidad:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_DATABASE: tickets_db_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CI: "true"
+      TEST_DB_HOST: 127.0.0.1
+      TEST_DB_NAME: tickets_db_test
+      TEST_DB_USER: root
+      TEST_DB_PASS: ""
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_mysql, curl, mbstring, gd, zip
+          coverage: none
+
+      - name: Esquema de la base de pruebas
+        run: sed 's/`tickets_db`/`tickets_db_test`/g' database/tickets_db.sql | mysql -h 127.0.0.1 -u root tickets_db_test
+
+      - name: config/database.php (solo para el CI)
+        run: |
+          cp config/database.example.php config/database.php
+          sed -i "s/'dbname'   => 'tickets_db'/'dbname'   => 'tickets_db_test'/;s/'host'     => 'localhost'/'host'     => '127.0.0.1'/" config/database.php
+
+      - name: Migraciones pendientes
+        run: php tools/migrar.php
+
+      - name: Descargar PHPStan
+        run: curl -sSL -o tools/phpstan.phar https://github.com/phpstan/phpstan/releases/download/1.12.7/phpstan.phar
+
+      - name: php -l, classmap, app.css, PHPStan, pruebas unitarias y lints
+        run: php tools/ci.php
+
+      - name: Pruebas HTTP
+        run: php tools/ci.php http

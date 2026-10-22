@@ -1,0 +1,21 @@
+/* =========================================================
+   Sistema de Tickets UFPS — Hoja de estilos unificada
+   Punto único de entrada: solo importa. Orden = cascada original (no reordenar).
+   Grupos: base → layout → componentes → módulos → utilidades (cada archivo indica su grupo).
+   Los colores/espaciados salen de tokens.css (cambio de marca en un solo lugar).
+   ========================================================= */
+
+@import url("tokens.css");
+
+@import url("css/01-base.css");
+@import url("css/02-layout.css");
+@import url("css/03-componentes.css");
+@import url("css/04-modulos-inventario.css");
+@import url("css/05-modulos-horarios.css");
+@import url("css/06-componentes-globales.css");
+@import url("css/07-modulos-horarios-grilla.css");
+@import url("css/08-shell.css");
+@import url("css/09-utilidades.css");
+@import url("css/10-plano-sala.css");
+@import url("css/11-pantalla-tv.css");
+@import url("css/12-tickets-compactos.css");

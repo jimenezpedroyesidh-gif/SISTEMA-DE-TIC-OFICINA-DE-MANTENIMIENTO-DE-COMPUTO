@@ -1,0 +1,35 @@
+/* MÓDULOS — horarios
+   Parte de estilo.css. El orden de importación en estilo.css es el orden original: no reordenar. */
+/* =========================================================
+   Módulo de Horarios — reutiliza variables ya definidas arriba, no agrega paleta nueva.
+   ========================================================= */
+
+.horario-tabs{
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
+  -webkit-overflow-scrolling: touch;
+}
+
+.stat-row{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.stat-card{
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-white);
+}
+.stat-value{ font-size: 1.6rem; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.stat-label{ font-size: var(--fs-xs); color: var(--gray-500); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+@media (min-width: 768px){
+  .stat-row{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+}

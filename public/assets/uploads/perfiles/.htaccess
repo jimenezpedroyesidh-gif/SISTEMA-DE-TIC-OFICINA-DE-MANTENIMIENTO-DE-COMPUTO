@@ -1,0 +1,5 @@
+# Solo imágenes de perfil: nada se ejecuta aquí.
+php_flag engine off
+<FilesMatch "\.(php|php\d|phtml|phar|pl|py|cgi|sh|exe)$">
+    Require all denied
+</FilesMatch>

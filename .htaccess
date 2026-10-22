@@ -1,0 +1,8 @@
+# XAMPP: si copias el proyecto completo dentro de htdocs/, solo public/ debe abrirse por URL.
+# Bloquea el acceso directo a código, credenciales, base de datos y subidas (mod_rewrite viene activo en XAMPP).
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ public/ [L]
+    RewriteRule ^(app|config|database|storage|tests|tools|vendor|\.git|\.github)(/|$) - [F,L]
+    RewriteRule ^(bootstrap\.php|phpstan\.neon|README\.md|LICENSE|\.gitignore)$ - [F,L]
+</IfModule>

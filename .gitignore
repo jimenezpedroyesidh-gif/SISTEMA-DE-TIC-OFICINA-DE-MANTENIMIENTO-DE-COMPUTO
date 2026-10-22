@@ -1,0 +1,83 @@
+# =========================================================
+# .gitignore — Sistema de Tickets UFPS (PHP + MySQL, sin framework)
+# Regla: en el repositorio van el código y las PLANTILLAS de
+# configuración (*.example.php); nunca credenciales, datos de
+# usuarios ni archivos generados en ejecución.
+# =========================================================
+
+# --- Configuración local con credenciales (se versionan solo los *.example.php) ---
+# Explícitos (documentan qué se protege):
+config/database.php
+config/postgres.php
+config/smtp.php
+config/google.php
+config/app.php
+# Y cualquier otro archivo de configuración futuro, salvo las plantillas:
+config/*.php
+!config/*.example.php
+.env
+.env.*
+!.env.example
+
+# --- Claves y secretos generados por la aplicación ---
+storage/clave_conexiones.key
+*.key
+*.pem
+
+# --- Archivos subidos por usuarios / generados en ejecución ---
+storage/adjuntos/*
+!storage/adjuntos/.gitkeep
+!storage/adjuntos/.htaccess
+storage/soluciones/*
+!storage/soluciones/.gitkeep
+!storage/soluciones/.htaccess
+storage/respaldos/
+storage/caida_*.txt
+public/assets/uploads/perfiles/*
+!public/assets/uploads/perfiles/.gitkeep
+!public/assets/uploads/perfiles/.htaccess
+
+# --- Volcados de base de datos con datos reales (el esquema oficial SÍ se versiona) ---
+*.sql.gz
+*.sql.zip
+*_backup.sql
+*_respaldo.sql
+dump*.sql
+!database/tickets_db.sql
+!database/seeds/*.sql
+
+# --- Usuarios de prueba con contraseñas en texto plano (nunca versionar) ---
+*.xlsx
+*.csv
+
+# --- Temporales de PHP: sesiones, caché, logs ---
+*.log
+logs/
+tmp/
+temp/
+cache/
+sess_*
+php_errors.log
+error_log
+.phpunit.result.cache
+.php-cs-fixer.cache
+
+# --- Mediciones de las pruebas de carga (se generan con tools/carga/) ---
+tools/carga/resultados/
+
+# --- Herramientas descargadas en CI/local ---
+tools/phpstan.phar
+composer.phar
+node_modules/
+
+# --- Sistema operativo y editores ---
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+nbproject/

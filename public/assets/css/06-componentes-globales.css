@@ -1,0 +1,357 @@
+/* COMPONENTES — notificaciones, buscador global, paginación
+   Parte de estilo.css. El orden de importación en estilo.css es el orden original: no reordenar. */
+/* =========================================================
+   Módulo 1 — Campanita de notificaciones
+   ========================================================= */
+.notif-widget{
+  position: relative;
+  display: inline-block;
+}
+.notif-bell{
+  position: relative;
+}
+.notif-bell .notif-badge{ border: 2px solid var(--color-white); }
+.notif-badge{
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: var(--radius-pill);
+  min-width: 16px;
+  text-align: center;
+}
+.notif-dropdown{
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  background: var(--color-white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  z-index: 60;
+  overflow: hidden;
+  animation: shell-aparecer .14s var(--ease);
+}
+.notif-dropdown-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--gray-200);
+  font-size: var(--fs-sm);
+}
+.notif-dropdown-head .btn-link{ font-size: var(--fs-xs); font-weight: 600; }
+.notif-dropdown-list{
+  max-height: 320px;
+  overflow-y: auto;
+}
+.notif-empty{ padding: var(--space-3); margin: 0; }
+.notif-item{
+  border-bottom: 1px solid var(--gray-100);
+}
+.notif-item a{
+  display: block;
+  padding: 10px var(--space-3);
+  text-decoration: none;
+  color: var(--gray-700);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+.notif-item a:hover{ background: var(--gray-50); }
+.notif-item.no-leido{ background: var(--color-primary-soft); box-shadow: inset 3px 0 0 var(--color-primary); }
+.notif-item.no-leido a{ font-weight: 600; color: var(--ink); }
+.notif-ver-todas{ display: block; padding: var(--space-2) var(--space-3); border-top: 1px solid var(--gray-200); text-align: center; font-size: var(--fs-sm); font-weight: 600; color: var(--color-link-action); text-decoration: none; }
+.notif-ver-todas:hover{ background: var(--gray-50); }
+.notif-fecha{
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  color: var(--gray-500);
+  font-weight: 400;
+}
+
+/* =========================================================
+   Módulo 5 — Buscador global
+   ========================================================= */
+.buscador-global-widget{
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 160px;
+}
+.buscador-global-widget .buscador-ico{ left: 11px; }
+.buscador-global-input{
+  width: 100%;
+  min-height: 38px; height: 38px;
+  padding: 0 var(--space-3) 0 34px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  font-size: var(--fs-sm);
+}
+.buscador-global-input:focus{ background: var(--color-white); }
+
+/* =========================================================
+   Buscador estándar (buscadorHtml() en ui.php) — una línea:
+   lupa + campo + «Buscar»; ✕ para quitar la búsqueda.
+   ========================================================= */
+.sr-only{ position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.buscador{ display: flex; flex-direction: row; align-items: center; gap: var(--space-2); width: 100%; }
+.buscador-campo{ position: relative; flex: 1 1 auto; min-width: 0; }
+.buscador-ico{
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; color: var(--gray-500); pointer-events: none;
+}
+.buscador-campo input[type="search"]{
+  min-height: 40px; height: 40px;
+  padding: 0 36px 0 38px;
+  font-size: var(--fs-sm);
+  border-color: var(--gray-300);
+}
+.buscador-campo input[type="search"]::-webkit-search-cancel-button{ -webkit-appearance: none; appearance: none; }
+.buscador-limpiar{
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  color: var(--gray-500); text-decoration: none; font-size: 1.1rem; line-height: 1;
+}
+.buscador-limpiar:hover{ background: var(--gray-100); color: var(--ink); }
+.buscador-btn{ width: auto; min-height: 40px; flex-shrink: 0; }
+/* Barra de búsqueda de una página (bajo el encabezado) con su línea de ayuda */
+.barra-busqueda{
+  background: var(--color-white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  padding: var(--space-3); margin-bottom: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.barra-busqueda-pie{ margin: 0; font-size: var(--fs-xs); color: var(--gray-500); display: flex; flex-wrap: wrap; gap: 4px var(--space-3); align-items: center; }
+.barra-busqueda-pie a{ font-weight: 600; }
+.barra-busqueda-resultado{ color: var(--gray-700); font-weight: 600; }
+.buscador-global-dropdown{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  background: var(--color-white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  z-index: 60;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.buscador-global-grupo-titulo{
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  padding: var(--space-2) var(--space-3) var(--space-1);
+}
+.buscador-global-item{
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 0.9rem;
+  border-top: 1px solid var(--gray-100);
+}
+.buscador-global-item:hover{ background: var(--gray-50); }
+.buscador-global-vacio{ padding: var(--space-3); margin: 0; }
+
+/* =========================================================
+   Módulo 4 — Paginación
+   ========================================================= */
+.paginacion{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  margin: var(--space-4) 0;
+  flex-wrap: wrap; /* botones numerados 1 2 3 … N: envuelven en móvil y son fáciles de tocar */
+}
+.paginacion .btn{ min-width: 2.25rem; min-height: 2.25rem; display: inline-flex; align-items: center; justify-content: center; }
+.paginacion .pag-actual{ pointer-events: none; background: var(--ink); border-color: var(--ink); }
+.paginacion .pag-puntos{ color: var(--gray-500); padding: 0 .15rem; }
+
+/* ---------- Conexiones / Inventario GLPI ---------- */
+.conexion-cabecera{ display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-2); }
+.conexion-cabecera .panel-title{ margin: 0; }
+/* Conexiones: una tarjeta de estado por servicio; el formulario vive en una ventana flotante. */
+.conexion-grid{ display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+@media (min-width: 1024px){ .conexion-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.conexion-card{ display: flex; flex-direction: column; margin: 0; }
+.conexion-pie{ margin-top: auto; padding-top: var(--space-3); border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; }
+/* Tarjetas de resumen que son enlace (filtran la lista): sin subrayado, con realce al pasar. */
+a.stat-card{ color: inherit; text-decoration: none; transition: border-color .15s var(--ease), box-shadow .15s var(--ease); }
+a.stat-card:hover, a.stat-card[aria-current="true"]{ border-color: var(--color-primary); box-shadow: var(--shadow-sm); }
+/* Indicadores, SLA y seguridad: dos secciones lado a lado en pantallas anchas (una sola columna en el celular). */
+.panel-grid{ display: grid; grid-template-columns: 1fr; gap: 0 var(--space-4); align-items: start; }
+@media (min-width: 1024px){ .panel-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Códigos de recuperación del segundo factor: monoespaciados, en cuadrícula, fáciles de copiar. */
+.codigos-recuperacion{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); margin: var(--space-3) 0; padding: 0; list-style: none; }
+.codigos-recuperacion li{ font-family: var(--font-mono, ui-monospace, monospace); font-size: 1rem; letter-spacing: .08em; text-align: center; padding: var(--space-2); border: 1px dashed var(--gray-300); border-radius: var(--radius-md); background: var(--gray-50); }
+/* QR del segundo factor: fondo blanco y margen para que la cámara lo lea bien. */
+.qr-mfa{ display: inline-block; padding: var(--space-3); background: var(--color-white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); }
+@media (min-width: 768px){
+  .stat-row.stat-row-4{ grid-template-columns: repeat(4, 1fr); }
+}
+.glpi-tipos{ display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
+.glpi-tipos .chip.activo{ background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
+.fila-activa td{ background: var(--color-info-soft); }
+
+/* Mi perfil: avatar + nombre sobre la tabla de datos. */
+.perfil-cabecera{ display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid var(--gray-200); }
+
+/* =========================================================
+   Tablero de actividades de la secretaría (actividades.php)
+   Pegatinas tipo «post-it» en tres columnas. En el celular las
+   columnas se deslizan de lado (una por pantalla).
+   ========================================================= */
+.segmento{ display: inline-flex; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 3px; gap: 2px; }
+.segmento-op{ padding: 6px 14px; border-radius: var(--radius-sm); font-size: var(--fs-sm); font-weight: 600; color: var(--gray-600); text-decoration: none; }
+.segmento-op:hover{ color: var(--ink); }
+.segmento-activo{ background: var(--color-white); color: var(--ink); box-shadow: var(--shadow-sm); }
+
+.tablero{
+  display: grid; grid-auto-flow: column; grid-auto-columns: 86%;
+  gap: var(--space-3); overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-2); margin: 0 calc(var(--space-3) * -1); padding-left: var(--space-3); padding-right: var(--space-3);
+}
+.tablero-col{
+  scroll-snap-align: start;
+  background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); min-height: 320px;
+}
+.tablero-col-head{ display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.tablero-col-head h2{ margin: 0; font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .06em; color: var(--gray-700); display: flex; align-items: center; gap: 8px; }
+.tablero-col-head h2::before{ content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--gray-500); }
+.tablero-col-curso .tablero-col-head h2::before{ background: var(--color-info); }
+.tablero-col-hecho .tablero-col-head h2::before{ background: var(--color-success); }
+.tablero-col-pendiente .tablero-col-head h2::before{ background: var(--color-warning); }
+.tablero-cuenta{ font-size: var(--fs-xs); font-weight: 700; color: var(--gray-600); background: var(--color-white); border: 1px solid var(--gray-200); border-radius: var(--radius-pill); padding: 1px 9px; }
+.tablero-lista{ display: flex; flex-direction: column; gap: var(--space-3); }
+.tablero-vacio{ margin: 0; padding: var(--space-4) var(--space-2); text-align: center; font-size: var(--fs-sm); color: var(--gray-500); border: 1px dashed var(--gray-300); border-radius: var(--radius-md); }
+
+.pegatina{
+  position: relative;
+  border: 1px solid var(--peg-borde); border-radius: 4px 4px 14px 4px;
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  box-shadow: 0 1px 1px var(--peg-borde), 0 6px 14px -8px var(--peg-borde);
+  transform: rotate(-.6deg);
+  transition: transform .15s var(--ease), box-shadow .15s var(--ease);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pegatina:nth-child(even){ transform: rotate(.5deg); }
+.pegatina:hover{ transform: rotate(0) translateY(-2px); box-shadow: 0 2px 4px var(--peg-borde), 0 12px 22px -10px var(--peg-borde); }
+.pegatina:target,
+.peg-color-op input:checked + .peg-muestra{ outline: 2px solid var(--ink); outline-offset: 2px; }
+.pegatina-mia{ box-shadow: inset 3px 0 0 var(--color-primary), 0 6px 14px -8px var(--peg-borde); }
+.peg-amarillo{ background: var(--peg-amarillo); }
+.peg-azul{ background: var(--peg-azul); }
+.peg-verde{ background: var(--peg-verde); }
+.peg-rosa{ background: var(--peg-rosa); }
+.peg-lila{ background: var(--peg-lila); }
+.tablero-col-hecho .pegatina{ opacity: .78; }
+.tablero-col-hecho .peg-titulo{ text-decoration: line-through; text-decoration-thickness: 1px; }
+.peg-head{ display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); min-height: 22px; }
+.peg-fecha{ font-size: .6875rem; font-weight: 700; color: var(--gray-700); background: color-mix(in srgb, var(--color-white) 60%, transparent); border-radius: var(--radius-pill); padding: 1px 8px; }
+.peg-vencida{ color: var(--color-danger); background: var(--color-white); }
+.peg-menu{ list-style: none; cursor: pointer; font-weight: 800; color: var(--gray-600); padding: 0 6px; border-radius: var(--radius-sm); line-height: 22px; }
+.peg-menu::-webkit-details-marker{ display: none; }
+.peg-menu:hover{ background: color-mix(in srgb, var(--color-white) 70%, transparent); color: var(--ink); }
+details.menu-acciones > summary.peg-menu::after{ content: none; }
+.peg-titulo{ margin: 0; font-size: .95rem; line-height: 1.3; color: var(--ink); overflow-wrap: anywhere; }
+.peg-detalle{ margin: 0; font-size: var(--fs-sm); color: var(--gray-700); line-height: 1.4; overflow-wrap: anywhere; }
+.peg-pie{ display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-top: 4px; padding-top: 6px; border-top: 1px dashed var(--peg-borde); }
+.peg-quien{ display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 600; color: var(--gray-700); min-width: 0; }
+.peg-avatar{ display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--color-white); border: 1px solid var(--peg-borde); font-size: .625rem; font-weight: 800; color: var(--gray-700); flex-shrink: 0; }
+.peg-avatar-libre{ color: var(--gray-500); }
+.peg-mover{ display: inline-flex; gap: 4px; }
+.peg-btn{ width: 30px; height: 30px; border-radius: var(--radius-sm); border: 1px solid var(--peg-borde); background: color-mix(in srgb, var(--color-white) 70%, transparent); color: var(--ink); font-family: inherit; font-weight: 800; cursor: pointer; }
+.peg-btn:hover{ background: var(--color-white); }
+.peg-colores{ border: none; padding: 0; margin: 0; display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--space-2); }
+.peg-colores legend{ width: 100%; font-weight: 600; font-size: var(--fs-sm); margin-bottom: var(--space-1); padding: 0; }
+.peg-color-op{ position: relative; cursor: pointer; margin: 0; }
+.peg-color-op input{ position: absolute; opacity: 0; inline-size: 1px; block-size: 1px; }
+.peg-muestra{ display: block; width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--peg-borde); }
+.peg-color-op input:focus-visible + .peg-muestra{ box-shadow: var(--focus-ring); }
+@media (min-width: 1024px){
+  .tablero{ grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; margin: 0; padding: 0; }
+}
+
+/* =========================================================
+   Interruptor (switch) de permisos — Usuarios y Horarios (admin)
+   Apagado: perilla a la izquierda, fondo blanco. Encendido: perilla a la derecha, fondo rojo institucional.
+   Es un <button type="submit" role="switch" aria-checked>: un clic cambia el permiso (sin JavaScript).
+   ========================================================= */
+.switch{
+  position: relative; flex-shrink: 0;
+  inline-size: 44px; block-size: 24px; padding: 0;
+  border: 1px solid var(--gray-300); border-radius: var(--radius-pill);
+  background: var(--color-white);
+  cursor: pointer;
+  transition: background .15s var(--ease), border-color .15s var(--ease);
+}
+.switch-knob{
+  position: absolute; top: 2px; left: 2px;
+  inline-size: 18px; block-size: 18px; border-radius: 50%;
+  background: var(--gray-300);
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s var(--ease), background .15s var(--ease);
+}
+.switch.is-on{ background: var(--color-primary); border-color: var(--color-primary); }
+.switch.is-on .switch-knob{ transform: translateX(20px); background: var(--color-white); }
+.switch:hover{ border-color: var(--color-primary); }
+/* Anillo de foco de controles propios (también los puestos del plano de sala, 10-plano-sala.css) */
+.switch:focus-visible,
+.sala-puesto:focus-visible, .sala-puesto:focus-within{ outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.switch-texto{ font-size: var(--fs-sm); color: var(--gray-500); }
+
+form.permiso-fila, table.data td form.permiso-fila{ display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; margin: 0; padding: 6px 0; }
+.permiso-fila + .permiso-fila{ border-top: 1px solid var(--gray-100); }
+.permiso-etiqueta{ flex: 1; min-inline-size: 0; font-size: var(--fs-sm); line-height: 1.25; }
+
+/* Botón «Permisos» + menú flotante por usuario (Usuarios). Popover nativo: va en la capa superior. */
+.permisos-boton{ white-space: nowrap; }
+.permisos-contador{ display: inline-block; min-inline-size: 2.2em; padding: 0 6px; border-radius: var(--radius-pill); background: var(--gray-100); color: var(--gray-600); font-size: var(--fs-xs); text-align: center; }
+.permisos-boton.con-activos .permisos-contador{ background: var(--color-primary); color: var(--color-on-primary); }
+.permisos-flotante{
+  inline-size: min(360px, calc(100vw - 32px));
+  padding: 12px 16px 8px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  background: var(--color-white); color: var(--ink);
+  box-shadow: var(--shadow-lg);
+}
+.permisos-flotante::backdrop{ background: var(--overlay); }
+.permisos-flotante-head{ display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--gray-200); }
+.permisos-cerrar{ border: 0; background: transparent; padding: 4px; cursor: pointer; color: var(--gray-500); border-radius: var(--radius-sm); }
+.permisos-cerrar:hover{ background: var(--gray-100); color: var(--ink); }
+.permisos-cerrar .ico{ inline-size: 18px; block-size: 18px; }
+.permiso-fila.no-aplica .permiso-etiqueta{ color: var(--gray-500); }
+.switch:disabled{ opacity: .45; cursor: not-allowed; }
+.switch:disabled:hover{ border-color: var(--gray-300); }
+
+/* Formularios por pasos: cada bloque numerado (1 Dónde, 2 Alcance…) */
+.form-paso{ border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: var(--space-4); margin: 0 0 var(--space-4); }
+.form-paso > legend{ display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-2); font-weight: 700; color: var(--ink); }
+.form-paso-num{ display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: var(--radius-pill); background: var(--color-primary); color: var(--color-on-primary); font-size: var(--fs-sm); }
+
+/* Opciones excluyentes como tarjetas (radio) */
+.opciones-tarjeta{ display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--space-2); }
+.opcion-tarjeta{ position: relative; display: flex; flex-direction: column; gap: 2px; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); background: var(--color-white); cursor: pointer; font-weight: 400; min-height: 44px; }
+.opcion-tarjeta input{ position: absolute; opacity: 0; pointer-events: none; }
+.opcion-tarjeta-titulo{ font-weight: 600; color: var(--ink); }
+.opcion-tarjeta-ayuda{ font-size: var(--fs-sm); color: var(--gray-500); }
+.opcion-tarjeta:has(input:checked){ border-color: var(--color-primary); background: var(--color-primary-soft); box-shadow: var(--focus-ring-soft); }
+.opcion-tarjeta:has(input:focus-visible){ box-shadow: var(--focus-ring); }
+.opcion-tarjeta:has(input:disabled){ opacity: .5; cursor: not-allowed; }
+
+/* Lista de casillas en cuadrícula (elegir equipos) */
+.lista-equipos{ display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-1) var(--space-3); max-height: 260px; overflow-y: auto; padding: var(--space-2); border: 1px solid var(--gray-200); border-radius: var(--radius-md); }
+.lista-equipos label{ display: flex; align-items: center; gap: var(--space-2); font-weight: 400; min-height: 32px; }
+.lista-equipos input{ width: auto; }

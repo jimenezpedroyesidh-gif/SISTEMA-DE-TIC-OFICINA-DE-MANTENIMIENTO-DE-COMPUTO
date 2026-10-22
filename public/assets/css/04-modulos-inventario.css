@@ -1,0 +1,299 @@
+/* MÓDULOS — QR de salas, escáner, inventario
+   Parte de estilo.css. El orden de importación en estilo.css es el orden original: no reordenar. */
+/* =========================================================
+   Módulo QR (gestionar_salas.php)
+   ========================================================= */
+
+/* La base de .qr-card (fondo, borde, radio, relleno) es compartida con
+   .chart-card en 03-componentes.css. */
+
+.qr-card canvas, .qr-card img{
+  margin: 0 auto var(--space-3);
+}
+
+.qr-card h3{ font-size: 1.05rem; margin-bottom: var(--space-2); }
+
+.qr-card .qr-url{
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  word-break: break-all;
+  margin-bottom: var(--space-3);
+}
+
+/* .qr-card .qr-actions comparte la regla de .actions (03-componentes.css). */
+
+/* =========================================================
+   Escáner QR (escanear_qr.php)
+   ========================================================= */
+
+.scanner-wrap{
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+#qr-reader{
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--gray-200);
+}
+
+.scanner-msg{
+  text-align: center;
+  padding: var(--space-4);
+  color: var(--gray-700);
+}
+
+/* =========================================================
+   Módulo de Inventario (gestionar_inventario.php, fichas,
+   revisar_componentes.php, buscador de componentes)
+   ========================================================= */
+
+.comp-list{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+.comp-card{
+  display: block;
+  background: var(--color-white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comp-card:hover{
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring-soft);
+}
+
+.comp-card-static{ cursor: default; }
+.comp-card-static:hover{ border-color: var(--gray-200); box-shadow: none; }
+
+.comp-card-top{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.comp-card-body{
+  font-size: 0.9rem;
+  color: var(--gray-700);
+  line-height: 1.5;
+}
+
+/* Resultados de búsqueda inline (buscador_componente_widget.php) */
+.comp-search-results{
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.comp-search-item{
+  text-align: left;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  min-height: var(--tap-size);
+}
+
+.comp-search-item:hover{
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+/* Fila del input de búsqueda + botón "Leer código" */
+.comp-search-row{
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+.comp-search-row input{ flex: 1 1 auto; min-width: 0; }
+.comp-qr-btn{ flex: 0 0 auto; white-space: nowrap; }
+
+/* Modal del lector de cámara para componentes */
+.comp-qr-modal{
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--overlay);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-3);
+}
+.comp-qr-modal-box{
+  background: var(--color-white); border-radius: var(--radius-md);
+  width: 100%; max-width: 380px;
+  padding: var(--space-3);
+}
+.comp-qr-modal-head{
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+#compQrReader{ width: 100%; border-radius: var(--radius-sm); overflow: hidden; }
+
+/* Línea de tiempo (ficha_componente.php, ficha_equipo.php) */
+.timeline{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.timeline-item{
+  border-left: 3px solid var(--color-primary);
+  background: var(--gray-50);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: var(--space-3) var(--space-4);
+}
+
+.timeline-head{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-2);
+}
+
+.timeline-head strong{ color: var(--color-primary); }
+
+.timeline-body{ font-size: 0.9rem; color: var(--gray-700); }
+.timeline-body p{ margin: var(--space-1) 0; }
+
+@media (min-width: 768px){
+  .comp-list{ grid-template-columns: repeat(2, 1fr); }
+
+  .timeline-head{
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+}
+
+@media (min-width: 1024px){
+  .comp-list{ grid-template-columns: repeat(3, 1fr); }
+}
+
+/* =========================================================
+   Salas y códigos QR (gestionar_salas.php): tarjetas compactas
+   ========================================================= */
+.sala-grid{ display: grid; grid-template-columns: 1fr; gap: var(--space-3); }
+.sala-card{
+  background: var(--color-white);
+  border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-2);
+  box-shadow: var(--shadow-sm);
+}
+.sala-card-head{ display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+.sala-card-titulo{ margin: 0; font-size: 1rem; }
+.sala-card-head .chip{ white-space: nowrap; flex-shrink: 0; }
+.sala-card .sala-progreso{ max-width: none; margin-top: 0; }
+.sala-card-sub{ margin: 2px 0 0; font-size: var(--fs-sm); color: var(--gray-500); }
+.sala-card-chips{ display: flex; flex-wrap: wrap; gap: 6px; }
+.sala-card-datos{ display: grid; grid-template-columns: auto 1fr; gap: 4px var(--space-3); margin: 0; font-size: var(--fs-sm); }
+.sala-card-datos dt{ color: var(--gray-500); font-size: var(--fs-xs); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding-top: 2px; }
+.sala-card-datos dd{ margin: 0; color: var(--gray-700); }
+.lista-simple{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.lista-simple li{ display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-2) 0; border-bottom: 1px solid var(--gray-100); font-size: var(--fs-sm); }
+.lista-simple li:last-child{ border-bottom: none; }
+@media (min-width: 768px){ .sala-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1280px){ .sala-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* =========================================================
+   Fichas por salón: la sala abierta ocupa toda la pantalla
+   (más espacio para el plano y los equipos; en el celular es como una ventana propia).
+   ========================================================= */
+.ficha-sala-cerrar{ display: none; }
+.ficha-sala[open]{
+  position: fixed; inset: 0; z-index: 75;
+  margin: 0; border: 0; border-radius: 0; box-shadow: none;
+  overflow-y: auto; overscroll-behavior: contain;
+  background: var(--color-white);
+  animation: shell-aparecer .16s var(--ease);
+}
+.ficha-sala[open] > summary{
+  position: sticky; top: 0; z-index: 6;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  font-size: 1.125rem;
+  padding: var(--space-3) var(--space-4);
+}
+.ficha-sala[open] > summary::after{ display: none; }
+.ficha-sala[open] > summary .ficha-sala-cerrar{
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-left: auto;
+  padding: 6px 14px; border: 1px solid var(--gray-300); border-radius: var(--radius-pill);
+  font-size: var(--fs-sm); font-weight: 600; color: var(--gray-700); background: var(--color-white);
+}
+.ficha-sala[open] > summary:hover .ficha-sala-cerrar{ border-color: var(--color-primary); color: var(--color-primary); }
+.ficha-sala[open] > .hg-accordion-body{
+  max-inline-size: 1400px; margin: 0 auto;
+  padding: var(--space-4);
+  border-top: 0;
+}
+@media (max-width: 639px){
+  .ficha-sala[open] > summary{ padding: var(--space-2) var(--space-3); font-size: 1rem; }
+  .ficha-sala[open] > summary .hg-accordion-badge{ margin-left: 0; }
+  .ficha-sala[open] > summary .ficha-sala-cerrar{ padding: 6px 10px; white-space: nowrap; }
+  .ficha-sala[open] > .hg-accordion-body{ padding: var(--space-3); }
+}
+
+/* =========================================================
+   Ficha de un componente (ficha_componente.php): responsiva y con regreso rápido al equipo
+   ========================================================= */
+.comp-ficha{ display: flex; flex-direction: column; gap: var(--space-3); }
+.comp-volver{ display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.comp-volver-principal{ font-weight: 600; }
+.comp-head{ display: grid; grid-template-columns: 1fr auto; gap: var(--space-3); align-items: center; margin: 0; }
+.comp-head-titulo{ display: flex; align-items: flex-start; gap: var(--space-3); min-inline-size: 0; }
+.comp-head-ico{ flex-shrink: 0; display: grid; place-items: center; inline-size: 48px; block-size: 48px; border-radius: var(--radius-md); background: var(--color-primary-soft); color: var(--color-primary); }
+.comp-head-ico .ico{ inline-size: 28px; block-size: 28px; }
+.comp-head-tipo{ margin: 0; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--gray-500); }
+.comp-head-codigo{ margin: 2px 0; font-size: 1.35rem; line-height: 1.2; overflow-wrap: anywhere; }
+.comp-head-estado{ align-self: flex-start; margin-left: auto; }
+.comp-ubicacion{ display: flex; flex-direction: column; gap: 2px; padding: var(--space-2) var(--space-3); border-left: 3px solid var(--color-primary); background: var(--gray-50); border-radius: var(--radius-sm); min-inline-size: 220px; }
+.comp-ubicacion-etq{ font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--gray-500); }
+
+.comp-grid{ display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: var(--space-3); align-items: start; }
+.comp-main, .comp-aside{ display: flex; flex-direction: column; gap: var(--space-3); min-inline-size: 0; }
+.comp-main > .panel-box, .comp-aside > .panel-box{ margin: 0; }
+.comp-aside{ position: sticky; top: calc(var(--header-h, 60px) + var(--space-3)); }
+.comp-aside .qr-card{ max-inline-size: none; }
+
+.comp-datos{ display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--space-2) var(--space-4); margin: 0; }
+.comp-datos > div{ min-inline-size: 0; padding-bottom: var(--space-2); border-bottom: 1px solid var(--gray-100); }
+.comp-datos dt{ font-size: var(--fs-xs); font-weight: 600; color: var(--gray-500); margin-bottom: 2px; }
+.comp-datos dd{ margin: 0; overflow-wrap: anywhere; }
+.comp-datos-ancho{ grid-column: 1 / -1; }
+
+.comp-plegable > summary{ list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+.comp-plegable > summary::-webkit-details-marker{ display: none; }
+.comp-plegable > summary .panel-title{ margin: 0; }
+.comp-plegable > summary::after{ content: '▾'; color: var(--gray-500); }
+.comp-plegable[open] > summary::after{ content: '▴'; }
+.comp-plegable[open] > summary{ margin-bottom: var(--space-2); }
+
+@media (max-width: 767px){
+  .comp-grid{ grid-template-columns: 1fr; }
+  .comp-aside{ position: static; }
+  .comp-head{ grid-template-columns: 1fr; }
+  .comp-ubicacion{ min-inline-size: 0; }
+}
+@media (max-width: 639px){
+  .comp-volver .btn{ flex: 1 1 auto; text-align: center; justify-content: center; }
+  .comp-volver-principal{ flex-basis: 100%; }
+  .comp-head-codigo{ font-size: 1.1rem; }
+  .comp-datos{ grid-template-columns: 1fr 1fr; }
+  .comp-aside .qr-card{ max-inline-size: 260px; margin: 0 auto; }
+}

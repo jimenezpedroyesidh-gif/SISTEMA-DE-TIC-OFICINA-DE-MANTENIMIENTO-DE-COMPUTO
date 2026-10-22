@@ -1,0 +1,17 @@
+# Análisis estático (php tools/ci.php phpstan). Descarga phpstan.phar en tools/ (ver tools/ci.php).
+parameters:
+    level: 3
+    paths:
+        - app
+        - public
+        - bootstrap.php
+    scanDirectories:
+        - vendor
+    ignoreErrors:
+        # Las vistas y controladores de Presentation/ se cargan con `require` en ámbito global y
+        # comparten variables con su controlador: PHPStan no puede seguirlas. public/ ya no necesita
+        # excepción: solo tiene puntos de entrada.
+        -
+            identifier: variable.undefined
+            paths:
+                - app/Presentation/*
