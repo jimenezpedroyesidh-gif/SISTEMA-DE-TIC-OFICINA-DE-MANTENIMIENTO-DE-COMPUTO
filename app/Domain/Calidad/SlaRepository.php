@@ -26,6 +26,7 @@ final class SlaRepository
                          LEFT(COALESCE(t.descripcion, ''), 160) AS resumen, t.fecha_terminacion, t.fecha_firmado,
                          NULL AS subtipo
                   FROM tickets t LEFT JOIN salas s ON s.id_sala = t.id_sala
+                  {FILTRO_T}
                   UNION ALL
                   SELECT 'tickets_profesor', p.id, p.estado, p.fecha_creacion,
                          IF(p.tipo_ticket = 'danio', 'INCIDENTE', 'REQUERIMIENTO'), p.categoria, p.origen,
@@ -34,21 +35,41 @@ final class SlaRepository
                          LEFT(COALESCE(p.descripcion_problema, p.descripcion_actividad, p.motivo, p.descripcion_software, ''), 160),
                          NULL, p.fecha_firmado, p.subtipo_requerimiento
                   FROM tickets_profesor p LEFT JOIN salas s ON s.id_sala = COALESCE(p.id_sala, p.id_sala_actual)
+                  {FILTRO_P}
                 ) x
                 LEFT JOIN ticket_sla ts ON ts.tabla_ticket = x.tabla AND ts.id_ticket = x.id
                 LEFT JOIN users ur ON ur.id = x.id_responsable
                 WHERE 1 = 1";
+        // Un ticket o un lote de UNA tabla (revisión periódica): el filtro por id va DENTRO de la rama del UNION
+        // que corresponde y la otra queda vacía. MariaDB no siempre lo empuja solo, y entonces armaba el UNION
+        // completo (todos los tickets) para quedarse con 1 o 500 filas.
         $p = [];
+        $filtroT = $filtroP = '';
+        $tablaUnica = !empty($f['tabla']) && (!empty($f['id']) || isset($f['id_desde'], $f['id_hasta'])) ? (string)$f['tabla'] : null;
+        if ($tablaUnica !== null) {
+            $cond = !empty($f['id']) ? '= ?' : 'BETWEEN ? AND ?';
+            $filtroT = $filtroP = 'WHERE 1 = 0';
+            if ($tablaUnica === TablaTicket::NORMAL) $filtroT = "WHERE t.id $cond";
+            if ($tablaUnica === TablaTicket::PROFESOR) $filtroP = "WHERE p.id $cond";
+            $p = !empty($f['id']) ? [(int)$f['id']] : [(int)$f['id_desde'], (int)$f['id_hasta']];
+        }
+        $sql = str_replace(['{FILTRO_T}', '{FILTRO_P}'], [$filtroT, $filtroP], $sql);
         if (!empty($f['desde'])) { $sql .= ' AND x.fecha_creacion >= ?'; $p[] = $f['desde'] . ' 00:00:00'; }
         if (!empty($f['hasta'])) { $sql .= ' AND x.fecha_creacion <= ?'; $p[] = $f['hasta'] . ' 23:59:59'; }
         if (!empty($f['id_sala'])) { $sql .= ' AND x.id_sala = ?'; $p[] = (int)$f['id_sala']; }
         if (isset($f['dependencia']) && $f['dependencia'] !== '') { $sql .= ' AND x.dependencia = ?'; $p[] = (string)$f['dependencia']; }
         if (!empty($f['abiertos'])) { $sql .= " AND x.estado IN ('En espera','En proceso','Rechazado')"; }
-        if (!empty($f['tabla']) && !empty($f['id'])) { $sql .= ' AND x.tabla = ? AND x.id = ?'; $p[] = (string)$f['tabla']; $p[] = (int)$f['id']; }
         $sql .= ' ORDER BY x.fecha_creacion DESC, x.id DESC';
         $st = $pdo->prepare($sql);
         $st->execute($p);
         return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** Ids de una tabla de tickets en orden (para recorrerla por lotes). @return list<int> */
+    public static function idsTickets(PDO $pdo, string $tabla): array
+    {
+        if (!TablaTicket::valida($tabla)) return [];
+        return array_map('intval', $pdo->query("SELECT id FROM $tabla ORDER BY id")->fetchAll(PDO::FETCH_COLUMN));
     }
 
     /** Tickets que todavía no tienen fila en ticket_sla (para calcularles la prioridad automática). */

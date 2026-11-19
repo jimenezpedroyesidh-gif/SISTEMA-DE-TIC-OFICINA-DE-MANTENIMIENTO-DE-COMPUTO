@@ -144,7 +144,7 @@ if(isset($_POST['agregar_equipos_ticket'])){
 // profesores (con sesión o por QR) y reportes por QR sin sesión, más recientes primero (20 por página).
 // Bodega, tickets creados y checklist de equipos van en su propia vista (?vista=…, submenú lateral).
 $vista = in_array($_GET['vista'] ?? '', ['bodega', 'creados', 'checklist'], true) ? $_GET['vista'] : 'reportes';
-$resultReportes = paginarArreglo(BecaPanelRepository::reportesDanio($pdo, (int)$user_id), max(1, (int)($_GET['pagina'] ?? 1)), ticketsPorPagina());
+$resultReportes = BecaPanelRepository::reportesDanio($pdo, (int)$user_id, max(1, (int)($_GET['pagina'] ?? 1)), ticketsPorPagina());
 $reportesDanio = $resultReportes['datos'];
 $tickets_prof = array_values(array_filter($reportesDanio, fn($r) => $r['_tipo'] === 'prof'));
 $tickets_qr = array_values(array_filter($reportesDanio, fn($r) => $r['_tipo'] === 'qr'));

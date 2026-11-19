@@ -30,27 +30,62 @@ final class BecaPanelRepository
      * los profesores (con sesión, desde su panel o el QR) y los reportes por QR sin sesión, más recientes
      * primero. Los requerimientos de los profesores no van aquí: los atiende el técnico.
      * Cada fila lleva '_tipo' = 'prof' (tickets_profesor) o 'qr' (tickets, QR anónimo).
+     *
+     * Paginado en dos fases (como TicketBandeja): primero solo id + fecha de TODOS los visibles (filas ligeras,
+     * para ordenar y contar), y después las filas completas de la página que se ve. Antes se traían completos
+     * todos los reportes (miles con años de historia) para mostrar 5.
+     *
+     * @return array{datos: array, total: int, total_paginas: int, pagina: int}
      */
-    public static function reportesDanio(PDO $pdo, int $becaId): array
+    public static function reportesDanio(PDO $pdo, int $becaId, int $pagina = 1, int $porPagina = 0): array
     {
-        $prof = $pdo->query("
+        $ligeras = $pdo->query("
+    SELECT tp.id, tp.fecha_creacion, 'prof' AS _tipo
+    FROM tickets_profesor tp
+    JOIN users prof ON tp.profesor_id = prof.id
+    LEFT JOIN salas sp ON tp.id_sala = sp.id_sala
+    LEFT JOIN salas spa ON tp.id_sala_actual = spa.id_sala
+    WHERE tp.tipo_ticket = 'danio' AND " . TicketConsultas::condicionVisibleBecaProfesorSQL($becaId, 'tp', 'sp', 'spa') . "
+    UNION ALL
+    SELECT t.id, t.fecha_creacion, 'qr'
+    FROM tickets t
+    LEFT JOIN salas s ON t.id_sala = s.id_sala
+    WHERE t.origen = 'QR_ANONIMO' AND t.estado NOT IN ('Cerrado','Descartado')
+      AND " . TicketConsultas::condicionVisibleBecaTicketsSQL($becaId, 't', 's'))->fetchAll(PDO::FETCH_ASSOC);
+        usort($ligeras, fn($a, $b) => strcmp((string)$b['fecha_creacion'], (string)$a['fecha_creacion']) ?: ((int)$b['id'] <=> (int)$a['id']));
+        $res = paginarArreglo($ligeras, $pagina, $porPagina);
+
+        $ids = ['prof' => [], 'qr' => []];
+        foreach ($res['datos'] as $f) { $ids[$f['_tipo']][] = (int)$f['id']; }
+        $completas = ['prof' => [], 'qr' => []];
+        if ($ids['prof']) {
+            $in = implode(',', array_fill(0, count($ids['prof']), '?'));
+            $st = $pdo->prepare("
     SELECT tp.*, prof.nombre_completo AS profesor_nombre, tec.nombre_completo AS tecnico_nombre, 'prof' AS _tipo
     FROM tickets_profesor tp
     JOIN users prof ON tp.profesor_id = prof.id
     LEFT JOIN users tec ON tp.tecnico_id = tec.id
-    LEFT JOIN salas sp ON tp.id_sala = sp.id_sala
-    LEFT JOIN salas spa ON tp.id_sala_actual = spa.id_sala
-    WHERE tp.tipo_ticket = 'danio' AND " . TicketConsultas::condicionVisibleBecaProfesorSQL($becaId, 'tp', 'sp', 'spa'))->fetchAll(PDO::FETCH_ASSOC);
-        $qr = $pdo->query("
+    WHERE tp.id IN ($in)");
+            $st->execute($ids['prof']);
+            foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) { $completas['prof'][(int)$r['id']] = $r; }
+        }
+        if ($ids['qr']) {
+            $in = implode(',', array_fill(0, count($ids['qr']), '?'));
+            $st = $pdo->prepare("
     SELECT t.*, tec.nombre_completo AS tecnico_nombre, s.nombre_sala, 'qr' AS _tipo
     FROM tickets t
     LEFT JOIN users tec ON t.tecnico_id = tec.id
     LEFT JOIN salas s ON t.id_sala = s.id_sala
-    WHERE t.origen = 'QR_ANONIMO' AND t.estado NOT IN ('Cerrado','Descartado')
-      AND " . TicketConsultas::condicionVisibleBecaTicketsSQL($becaId, 't', 's'))->fetchAll(PDO::FETCH_ASSOC);
-        $todos = array_merge($prof, $qr);
-        usort($todos, fn($a, $b) => strcmp((string)$b['fecha_creacion'], (string)$a['fecha_creacion']));
-        return $todos;
+    WHERE t.id IN ($in)");
+            $st->execute($ids['qr']);
+            foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) { $completas['qr'][(int)$r['id']] = $r; }
+        }
+        $datos = [];
+        foreach ($res['datos'] as $f) {
+            if (isset($completas[$f['_tipo']][(int)$f['id']])) $datos[] = $completas[$f['_tipo']][(int)$f['id']];
+        }
+        $res['datos'] = $datos;
+        return $res;
     }
 
     /** ¿El ticket de profesor es un error de sala (daño)? Los requerimientos son del técnico. */

@@ -90,7 +90,12 @@ final class CalendarioHabil
         return $this->cacheDia[$f];
     }
 
-    /** Segundos hábiles entre dos instantes (0 si $b <= $a). Sin horario configurado cuenta tiempo corrido. */
+    /**
+     * Segundos hábiles entre dos instantes (0 si $b <= $a). Sin horario configurado cuenta tiempo corrido.
+     * El primer y el último día se calculan por partes; los días completos de en medio salen de una suma
+     * acumulada por día (acumulados()), así que el costo ya no crece con la distancia: antes se recorría día
+     * por día y un ticket de hace años costaba miles de vueltas en cada revisión del SLA.
+     */
     public function segundosEntre(DateTimeInterface $a, DateTimeInterface $b): int
     {
         $ta = $a->getTimestamp();
@@ -99,20 +104,55 @@ final class CalendarioHabil
         if (!$this->hayHorario()) return $tb - $ta;
 
         $tz = $a->getTimezone();
-        $dia = (new DateTimeImmutable('@' . $ta))->setTimezone($tz)->setTime(0, 0);
-        $fin = (new DateTimeImmutable('@' . $tb))->setTimezone($tz)->setTime(0, 0);
-        $total = 0;
-        while ($dia <= $fin) {
-            $r = $this->semana[(int)$dia->format('N')] ?? null;
-            if ($r !== null && !$this->esFestivo($dia->format('Y-m-d'))) {
-                $base = $dia->getTimestamp();
-                $desde = max($ta, $base + $r[0]);
-                $hasta = min($tb, $base + $r[1]);
-                if ($hasta > $desde) $total += $hasta - $desde;
-            }
-            $dia = $dia->modify('+1 day');
+        $diaA = (new DateTimeImmutable('@' . $ta))->setTimezone($tz)->setTime(0, 0);
+        $diaB = (new DateTimeImmutable('@' . $tb))->setTimezone($tz)->setTime(0, 0);
+        $total = $this->parteDelDia($diaA, $ta, $tb);
+        if ($diaB > $diaA) {
+            $total += $this->parteDelDia($diaB, $ta, $tb);
+            $total += $this->segundosDiasCompletos(self::diaEpoch($diaA) + 1, self::diaEpoch($diaB));
         }
         return $total;
+    }
+
+    /** Segundos hábiles de $dia que caen dentro de [$ta, $tb]. */
+    private function parteDelDia(DateTimeImmutable $dia, int $ta, int $tb): int
+    {
+        $r = $this->semana[(int)$dia->format('N')] ?? null;
+        if ($r === null || $this->esFestivo($dia->format('Y-m-d'))) return 0;
+        $base = $dia->getTimestamp();
+        $desde = max($ta, $base + $r[0]);
+        $hasta = min($tb, $base + $r[1]);
+        return $hasta > $desde ? $hasta - $desde : 0;
+    }
+
+    /** Fecha local → número de día desde 1970-01-01 (para indexar la suma acumulada). */
+    private static function diaEpoch(DateTimeImmutable $dia): int
+    {
+        return intdiv((new DateTimeImmutable($dia->format('Y-m-d'), new DateTimeZone('UTC')))->getTimestamp(), 86400);
+    }
+
+    /** @var array<int,int> día epoch => segundos hábiles acumulados desde $acumDesde hasta ANTES de ese día */
+    private array $acum = [];
+    private int $acumDesde = 0;
+    private int $acumHasta = -1;
+
+    /** Segundos hábiles de los días completos del rango [$d1, $d2) (días epoch). */
+    private function segundosDiasCompletos(int $d1, int $d2): int
+    {
+        if ($d2 <= $d1) return 0;
+        $construirHasta = $d2;
+        if ($this->acumHasta < $this->acumDesde || $d1 < $this->acumDesde) { // vacía o hace falta empezar antes
+            $construirHasta = max($d2, $this->acumHasta);
+            $this->acum = [$d1 => 0];
+            $this->acumDesde = $d1;
+            $this->acumHasta = $d1;
+        }
+        for ($d = $this->acumHasta; $d < $construirHasta; $d++) {
+            $r = $this->semana[($d % 7 + 10) % 7 + 1] ?? null; // 1970-01-01 fue jueves (ISO 4)
+            $this->acum[$d + 1] = $this->acum[$d] + (($r === null || $this->esFestivo(gmdate('Y-m-d', $d * 86400))) ? 0 : $r[1] - $r[0]);
+        }
+        $this->acumHasta = max($this->acumHasta, $construirHasta);
+        return $this->acum[$d2] - $this->acum[$d1];
     }
 
     /** Instante en que se cumplen $segundos hábiles contados desde $inicio. */

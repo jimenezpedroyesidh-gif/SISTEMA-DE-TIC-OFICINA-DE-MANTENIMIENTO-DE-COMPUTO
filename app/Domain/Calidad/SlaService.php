@@ -85,6 +85,12 @@ final class SlaService
     public static function medir(PDO $pdo, array $filtros = [], ?DateTimeImmutable $ahora = null, ?CalendarioHabil $cal = null): array
     {
         self::completarFaltantes($pdo);
+        return self::medirSinCompletar($pdo, $filtros, $ahora, $cal);
+    }
+
+    /** medir() sin crear antes las filas de servicio que falten (la revisión por lotes las crea una sola vez). */
+    private static function medirSinCompletar(PDO $pdo, array $filtros, ?DateTimeImmutable $ahora = null, ?CalendarioHabil $cal = null): array
+    {
         $tickets = SlaRepository::tickets($pdo, $filtros);
         if (!$tickets) return [];
         $ahora = $ahora ?? new DateTimeImmutable('now');
@@ -213,17 +219,44 @@ final class SlaService
         ];
     }
 
-    /** Guarda en ticket_sla las fechas calculadas (trazabilidad y consultas externas). */
-    public static function sincronizar(PDO $pdo, ?array $medidos = null): array
+    /** Tickets por lote en la revisión periódica: la memoria queda acotada aunque haya años de tickets sin archivar. */
+    public const LOTE_REVISION = 500;
+
+    /**
+     * Guarda en ticket_sla las fechas calculadas (trazabilidad y consultas externas) de TODOS los tickets.
+     * Los recorre por lotes de LOTE_REVISION (por tabla e id): antes se medían todos de una vez y con unos
+     * 30.000 tickets la petición pasaba de memory_limit = 128M. Devuelve solo los ABIERTOS ya medidos
+     * (lo único que necesitan los avisos de vencimiento).
+     * @return list<array<string,mixed>>
+     */
+    public static function sincronizar(PDO $pdo): array
     {
-        $medidos = $medidos ?? self::medir($pdo);
-        foreach ($medidos as $m) {
-            if ((string)($m['sla_primera_respuesta'] ?? '') === (string)($m['primera_respuesta'] ?? '')
-                && (string)($m['sla_fecha_solucion'] ?? '') === (string)($m['solucion'] ?? '')
-                && (int)($m['sla_reaperturas'] ?? 0) === (int)$m['reaperturas']) continue;
-            SlaRepository::guardarDerivados($pdo, (string)$m['tabla'], (int)$m['id'], $m['primera_respuesta'], $m['primera_solucion'], $m['solucion'], (int)$m['reaperturas']);
+        self::completarFaltantes($pdo);
+        $ahora = new DateTimeImmutable('now');
+        $cal = CalendarioHabil::desdeBase($pdo);
+        $abiertos = [];
+        foreach (TablaTicket::TODAS as $tabla) {
+            foreach (array_chunk(SlaRepository::idsTickets($pdo, $tabla), self::LOTE_REVISION) as $lote) {
+                $medidos = self::medirSinCompletar($pdo, ['tabla' => $tabla, 'id_desde' => $lote[0], 'id_hasta' => $lote[count($lote) - 1]], $ahora, $cal);
+                $cambios = [];
+                foreach ($medidos as $m) {
+                    if (!$m['resuelto'] && !$m['descartado']) $abiertos[] = $m;
+                    if ((string)($m['sla_primera_respuesta'] ?? '') === (string)($m['primera_respuesta'] ?? '')
+                        && (string)($m['sla_fecha_solucion'] ?? '') === (string)($m['solucion'] ?? '')
+                        && (int)($m['sla_reaperturas'] ?? 0) === (int)$m['reaperturas']) continue;
+                    $cambios[] = $m;
+                }
+                unset($medidos);
+                if ($cambios) { // una transacción por lote: cientos de UPDATE con una sola escritura a disco
+                    Database::transaccion(static function (PDO $pdo) use ($cambios): void {
+                        foreach ($cambios as $m) {
+                            SlaRepository::guardarDerivados($pdo, (string)$m['tabla'], (int)$m['id'], $m['primera_respuesta'], $m['primera_solucion'], $m['solucion'], (int)$m['reaperturas']);
+                        }
+                    }, $pdo);
+                }
+            }
         }
-        return $medidos;
+        return $abiertos;
     }
 
     /**
@@ -281,8 +314,7 @@ final class SlaService
             $ultima = ConfigSistema::entero($pdo, 'sla_ultima_revision');
             if (!$forzar && time() - $ultima < self::INTERVALO_REVISION) return false;
             ConfigSistema::guardar($pdo, 'sla_ultima_revision', (string)time(), null);
-            $medidos = self::sincronizar($pdo);
-            self::revisarAvisos($pdo, array_values(array_filter($medidos, static fn($m) => !$m['resuelto'] && !$m['descartado'])));
+            self::revisarAvisos($pdo, self::sincronizar($pdo));
             SeguridadService::aplicarRetencionIp($pdo);
             IncidenteService::desdeTickets($pdo);
             return true;

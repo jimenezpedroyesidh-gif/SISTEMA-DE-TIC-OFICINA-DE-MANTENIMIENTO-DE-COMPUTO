@@ -906,7 +906,12 @@ try {
         && TicketBandeja::rango(['datos' => [1, 2], 'total' => 12, 'pagina' => 3]) === '11–12 de 12');
     check('salasTodas/becasParaAsignar/becasConCodigo devuelven arreglos', is_array(TicketPanelRepository::salasTodas($pdo))
         && is_array(TicketPanelRepository::becasParaAsignar($pdo)) && is_array(TicketPanelRepository::becasConCodigo($pdo)));
-    $rdB = BecaPanelRepository::reportesDanio($pdo, $beca1);
+    $rdPag = BecaPanelRepository::reportesDanio($pdo, $beca1, 1, 1000);
+    $rdB = $rdPag['datos'];
+    $rdP1 = BecaPanelRepository::reportesDanio($pdo, $beca1, 1, 2);
+    check('BecaPanelRepository: reportes de daño paginados (página de 2, mismo total, más recientes primero)',
+        count($rdP1['datos']) === min(2, $rdPag['total']) && $rdP1['total'] === $rdPag['total']
+        && array_map(fn($r) => $r['_tipo'] . $r['id'], $rdP1['datos']) === array_map(fn($r) => $r['_tipo'] . $r['id'], array_slice($rdB, 0, 2)));
     check('BecaPanelRepository: listas y auxiliares (reportes de daño = solo errores de sala de profesor + QR anónimo)', is_array($rdB)
         && !array_filter($rdB, fn($r) => $r['_tipo'] === 'prof' && $r['tipo_ticket'] !== 'danio') && !array_filter($rdB, fn($r) => $r['_tipo'] === 'qr' && $r['origen'] !== 'QR_ANONIMO')
         && BecaPanelRepository::esDanioProfesor($pdo, 2147483000) === false
